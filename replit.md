@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains the ChittyOS Trust Engine, a revolutionary 6-dimensional trust scoring system that evaluates entities (people, organizations, AI agents) based on verifiable actions and outcomes. The system provides a Flask web application that demonstrates three different personas and their trust scores across multiple dimensions and output metrics.
+This repository contains ChittyTrust, a revolutionary 6-dimensional trust scoring system that evaluates entities (people, organizations, AI agents) based on verifiable actions and outcomes. The system provides a Flask web application that demonstrates three different personas and their trust scores across multiple dimensions and output metrics.
 
 ## User Preferences
 

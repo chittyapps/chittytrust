@@ -1,5 +1,5 @@
 /**
- * ChittyOS Trust Engine Frontend
+ * ChittyTrust Frontend
  * Handles persona selection, trust calculations, and visualizations
  */
 
