@@ -19,6 +19,8 @@ from .dimensions import (
 )
 from .models import TrustEntity, TrustEvent
 from .scores import ChittyScore, LegalScore, PeopleScore, StateScore
+from .analytics import TrustAnalytics, TrustInsight, TrustPattern
+from .visualization import TrustVisualizationEngine
 
 
 @dataclass
