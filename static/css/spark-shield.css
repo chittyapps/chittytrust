@@ -1,19 +1,19 @@
 /* ChittyTrust Shield-Spark Design System */
 
-/* Authentic Dynamic Spark Element */
+/* Clean Dynamic Spark Element */
 .spark {
     position: relative;
     display: inline-block;
-    width: 16px;
-    height: 20px;
+    width: 14px;
+    height: 16px;
 }
 
 .spark svg {
     width: 100%;
     height: 100%;
-    animation: sparkPulse 2s ease-in-out infinite;
+    animation: sparkPulse 3s ease-in-out infinite;
     z-index: 2;
-    filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.6));
+    filter: drop-shadow(0 0 2px rgba(245, 158, 11, 0.4));
 }
 
 /* Shield + Spark Combinations */

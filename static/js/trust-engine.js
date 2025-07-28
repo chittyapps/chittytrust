@@ -394,7 +394,7 @@ class TrustEngine {
             channel: 'send',
             outcome: 'target',
             network: 'share-2',
-            justice: 'balance-scale'
+            justice: 'scale'
         };
 
         grid.innerHTML = Object.entries(explanations).map(([dimension, explanation]) => `
@@ -481,7 +481,7 @@ class TrustEngine {
             <div class="card bg-dark border-chitty-blue">
                 <div class="card-header bg-chitty-darker border-chitty-blue">
                     <h5 class="mb-0 text-chitty-green">
-                        <i data-feather="brain" class="me-2"></i>
+                        <i data-feather="zap" class="me-2"></i>
                         Trust Insights & Analysis
                     </h5>
                 </div>

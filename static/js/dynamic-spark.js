@@ -5,45 +5,22 @@ class DynamicSpark {
         this.initializeSparkElements();
     }
 
-    // Create authentic lightning bolt SVG based on brand guidelines
+    // Create clean, refined lightning bolt SVG based on brand guidelines
     createSparkSVG(level = 'L2', size = 16) {
         const colors = this.getTrustLevelColors(level);
         
         return `
             <svg width="${size}" height="${size * 1.25}" viewBox="0 0 16 20" class="dynamic-spark-svg">
-                <!-- Lightning bolt path from brand guidelines -->
+                <!-- Simplified lightning bolt path -->
                 <path 
-                    d="M8 1 L6 8 L10 8 L6.5 19 L12 10 L8.5 10 Z" 
+                    d="M8 2 L6.5 9 L9.5 9 L7 18 L11 11 L8.5 11 Z" 
                     fill="url(#sparkGradient-${level})" 
                     class="lightning-bolt"
-                />
-                
-                <!-- Energy rings -->
-                <circle 
-                    cx="8" 
-                    cy="10" 
-                    r="12" 
-                    fill="none" 
-                    stroke="${colors.primary}" 
-                    stroke-width="0.5" 
-                    opacity="0.3"
-                    class="energy-ring-outer"
-                />
-                <circle 
-                    cx="8" 
-                    cy="10" 
-                    r="8" 
-                    fill="none" 
-                    stroke="${colors.secondary}" 
-                    stroke-width="0.3" 
-                    opacity="0.5"
-                    class="energy-ring-inner"
                 />
                 
                 <defs>
                     <linearGradient id="sparkGradient-${level}" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stop-color="${colors.start}" />
-                        <stop offset="50%" stop-color="${colors.middle}" />
                         <stop offset="100%" stop-color="${colors.end}" />
                     </linearGradient>
                 </defs>
@@ -106,8 +83,8 @@ class DynamicSpark {
             // Replace content with authentic spark SVG
             element.innerHTML = this.createSparkSVG(trustLevel, size);
             
-            // Add dynamic particle effects for high trust levels
-            if (trustLevel === 'L4' || trustLevel === 'L3') {
+            // Add subtle particle effects for highest trust level only
+            if (trustLevel === 'L4') {
                 this.addParticleEffects(element, index);
             }
         });
@@ -135,37 +112,28 @@ class DynamicSpark {
         return 16;
     }
 
-    // Add dynamic particle effects for high trust levels
+    // Add subtle particle effects for high trust levels (simplified)
     addParticleEffects(element, index) {
-        const particles = document.createElement('div');
-        particles.className = 'spark-particles';
-        particles.style.cssText = `
+        // Only add particles for L4 level to avoid visual overload
+        const parent = element.closest('.trust-level-L4');
+        if (!parent) return;
+        
+        const particle = document.createElement('div');
+        particle.className = 'spark-particle';
+        particle.style.cssText = `
             position: absolute;
-            top: -5px;
-            left: -5px;
-            right: -5px;
-            bottom: -5px;
+            top: -2px;
+            right: -2px;
+            width: 2px;
+            height: 2px;
+            border-radius: 50%;
+            background: #10B981;
+            animation: particleGlow 3s ease-in-out infinite;
+            animation-delay: ${index * 0.5}s;
             pointer-events: none;
             z-index: 1;
         `;
-
-        // Create individual particles
-        for (let i = 0; i < 3; i++) {
-            const particle = document.createElement('div');
-            particle.className = `particle particle-${i}`;
-            particle.style.cssText = `
-                position: absolute;
-                width: 3px;
-                height: 3px;
-                border-radius: 50%;
-                background: #F59E0B;
-                animation: particleFloat-${i} ${2 + i * 0.5}s ease-in-out infinite;
-                animation-delay: ${index * 0.2 + i * 0.3}s;
-            `;
-            particles.appendChild(particle);
-        }
-
-        element.appendChild(particles);
+        element.appendChild(particle);
     }
 
     // Update spark based on verification state
@@ -220,20 +188,10 @@ class DynamicSpark {
 
 // CSS animations for particles and effects
 const sparkAnimationCSS = `
-/* Particle animations */
-@keyframes particleFloat-0 {
-    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
-    50% { transform: translate(5px, -8px) scale(1.2); opacity: 1; }
-}
-
-@keyframes particleFloat-1 {
-    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
-    50% { transform: translate(-6px, -5px) scale(1.1); opacity: 0.9; }
-}
-
-@keyframes particleFloat-2 {
-    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.7; }
-    50% { transform: translate(3px, -10px) scale(1.3); opacity: 1; }
+/* Simplified particle animation */
+@keyframes particleGlow {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.5); }
 }
 
 /* Energy ring animations */
