@@ -72,7 +72,7 @@ The application follows a modular architecture with clear separation between the
 - **Bootstrap 5**: Responsive UI framework
 - **Chart.js**: Interactive data visualization
 - **Feather Icons**: Consistent iconography
-- **Custom CSS**: ChittyOS brand styling with dark theme
+- **Custom CSS**: ChittyTrust brand styling with dark theme and dynamic spark system
 
 ### Development Tools
 - **Poetry**: Dependency management (preferred)
@@ -105,5 +105,12 @@ The application follows a modular architecture with clear separation between the
 5. **Frontend-First Visualization**: The web interface prioritizes clear visualization of multi-dimensional trust data through radar charts and detailed breakdowns.
 
 6. **Pydantic Data Validation**: Strong typing and validation ensure data integrity throughout the trust calculation pipeline.
+
+7. **Dynamic Spark Design System**: Comprehensive visual language using shield-spark combinations to communicate trust levels, verification states, and brand identity:
+   - **Lightning Spark Element**: Angular, energetic spark based on brand guidelines with gradient colors and CSS clip-path for authentic lightning shape
+   - **Trust Level Mapping**: L0-L4 levels with distinct spark colors, animations, and intensities
+   - **Verification States**: Active, pending, and failed states with appropriate visual feedback
+   - **Position Variations**: Spark-over (top-right), spark-inside (center), and spark-emanating (multiple sparks) for different contexts
+   - **Brand Integration**: Primary logo using dynamic spark-shield combination with hover effects and responsive design
 
 The system is designed to be both a working demonstration of 6D trust scoring and a foundation for production trust evaluation systems.

@@ -18,17 +18,18 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/chitty.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/spark-shield.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/persona-cards.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dynamic-spark-logo.css') }}">
 </head>
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-chitty-dark fixed-top">
         <div class="container">
-            <a class="navbar-brand fw-bold chitty-logo" href="#" style="color: #00ff88;">
-                <div class="shield-spark spark-over">
-                    <i data-feather="shield" class="me-1"></i>
-                    <span class="spark"></span>
+            <a class="chitty-dynamic-logo" href="#">
+                <div class="dynamic-spark-container">
+                    <i data-feather="shield" class="dynamic-spark-shield"></i>
+                    <div class="dynamic-lightning-spark"></div>
                 </div>
-                ChittyTrust
+                <span class="chitty-brand-text">ChittyTrust</span>
             </a>
             <div class="navbar-nav ms-auto">
                 <span class="nav-link text-chitty-blue">6D Trust Revolution</span>
