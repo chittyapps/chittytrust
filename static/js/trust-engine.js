@@ -64,6 +64,13 @@ class TrustEngine {
         
         // Initialize feather icons for persona cards
         feather.replace();
+        
+        // Initialize dynamic sparks for persona cards
+        setTimeout(() => {
+            if (window.dynamicSparkSystem) {
+                window.dynamicSparkSystem.initializeSparkElements();
+            }
+        }, 100);
     }
 
     async selectPersona(personaId) {
@@ -177,6 +184,11 @@ class TrustEngine {
         
         // Update shield-spark elements based on scores
         this.updateTrustScoreSparks(trustData);
+        
+        // Reinitialize dynamic sparks after content update
+        if (window.dynamicSparkSystem) {
+            window.dynamicSparkSystem.initializeSparkElements();
+        }
     }
 
     animateScore(elementId, finalValue, suffix = '') {
@@ -251,12 +263,22 @@ class TrustEngine {
             sparkElement.className = sparkElement.className.replace(/trust-level-L\d/, `trust-level-${level}`);
             
             // Add verification state for high scores
+            let state = 'normal';
             if (score >= 85) {
                 sparkElement.classList.add('verification-active');
+                state = 'verification-active';
             } else if (score >= 60) {
                 sparkElement.classList.remove('verification-active');
+                sparkElement.classList.remove('verification-pending');
             } else {
                 sparkElement.classList.add('verification-pending');
+                state = 'verification-pending';
+            }
+            
+            // Update spark visual state using dynamic spark system
+            const sparkInner = sparkElement.querySelector('.spark');
+            if (sparkInner && window.dynamicSparkSystem) {
+                window.dynamicSparkSystem.updateSparkState(sparkInner, state);
             }
         }
     }

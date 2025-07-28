@@ -19,6 +19,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/spark-shield.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/persona-cards.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dynamic-spark-logo.css') }}">
+    
+    <!-- Dynamic Spark System -->
+    <script src="{{ url_for('static', filename='js/dynamic-spark.js') }}"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -27,7 +30,42 @@
             <a class="chitty-dynamic-logo" href="#">
                 <div class="dynamic-spark-container">
                     <i data-feather="shield" class="dynamic-spark-shield"></i>
-                    <div class="dynamic-lightning-spark"></div>
+                    <div class="dynamic-lightning-spark">
+                        <svg width="14" height="18" viewBox="0 0 16 20" class="dynamic-spark-svg">
+                            <path 
+                                d="M8 1 L6 8 L10 8 L6.5 19 L12 10 L8.5 10 Z" 
+                                fill="url(#logoSparkGradient)" 
+                                class="lightning-bolt"
+                            />
+                            <circle 
+                                cx="8" 
+                                cy="10" 
+                                r="12" 
+                                fill="none" 
+                                stroke="#F59E0B" 
+                                stroke-width="0.5" 
+                                opacity="0.3"
+                                class="energy-ring-outer"
+                            />
+                            <circle 
+                                cx="8" 
+                                cy="10" 
+                                r="8" 
+                                fill="none" 
+                                stroke="#EF4444" 
+                                stroke-width="0.3" 
+                                opacity="0.5"
+                                class="energy-ring-inner"
+                            />
+                            <defs>
+                                <linearGradient id="logoSparkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#F59E0B" />
+                                    <stop offset="50%" stop-color="#EF4444" />
+                                    <stop offset="100%" stop-color="#DC2626" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
                 </div>
                 <span class="chitty-brand-text">ChittyTrust</span>
             </a>
