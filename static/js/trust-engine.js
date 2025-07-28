@@ -30,14 +30,40 @@ class TrustEngine {
         const selector = document.getElementById('persona-selector');
         if (!selector) return;
 
-        selector.innerHTML = this.personas.map(persona => `
-            <div class="persona-card" data-persona-id="${persona.id}" onclick="trustEngine.selectPersona('${persona.id}')">
-                <div class="persona-avatar">${persona.avatar}</div>
-                <div class="persona-name">${persona.name}</div>
-                <div class="persona-description">${persona.description}</div>
-                <div class="persona-type">${persona.type}</div>
-            </div>
-        `).join('');
+        selector.innerHTML = this.personas.map(persona => {
+            // Determine initial trust level visual based on persona
+            let trustLevel = 'L2';
+            let sparkType = 'spark-over';
+            
+            if (persona.id === 'alice') {
+                trustLevel = 'L4';
+                sparkType = 'spark-emanating';
+            } else if (persona.id === 'bob') {
+                trustLevel = 'L2';
+                sparkType = 'spark-inside';
+            } else if (persona.id === 'charlie') {
+                trustLevel = 'L3';
+                sparkType = 'spark-over';
+            }
+            
+            return `
+                <div class="persona-card" data-persona-id="${persona.id}" onclick="trustEngine.selectPersona('${persona.id}')">
+                    <div class="persona-header">
+                        <div class="persona-avatar">${persona.avatar}</div>
+                        <div class="shield-spark ${sparkType} trust-level-${trustLevel} verification-pending">
+                            <i data-feather="shield" style="font-size: 0.8em;"></i>
+                            <span class="spark"></span>
+                        </div>
+                    </div>
+                    <div class="persona-name">${persona.name}</div>
+                    <div class="persona-description">${persona.description}</div>
+                    <div class="persona-type">${persona.type}</div>
+                </div>
+            `;
+        }).join('');
+        
+        // Initialize feather icons for persona cards
+        feather.replace();
     }
 
     async selectPersona(personaId) {
@@ -148,6 +174,9 @@ class TrustEngine {
 
         // Update explanations
         this.updateExplanations(trustData.metadata.explanation);
+        
+        // Update shield-spark elements based on scores
+        this.updateTrustScoreSparks(trustData);
     }
 
     animateScore(elementId, finalValue, suffix = '') {
@@ -174,11 +203,79 @@ class TrustEngine {
         const levelElement = document.getElementById('chitty-level');
         if (!levelElement || !levelData) return;
 
+        // Update trust level class for spark animation
+        const sparkElement = levelElement.querySelector('.shield-spark');
+        if (sparkElement) {
+            sparkElement.className = `shield-spark spark-over trust-level-${levelData.level}`;
+        }
+
         levelElement.innerHTML = `
+            <div class="shield-spark spark-over trust-level-${levelData.level}">
+                <i data-feather="shield" style="color: ${levelData.color};"></i>
+                <span class="spark"></span>
+            </div>
             <span class="chitty-level-badge" style="background-color: ${levelData.color}20; color: ${levelData.color}; border: 1px solid ${levelData.color};">
                 ${levelData.level} - ${levelData.name}
             </span>
         `;
+        
+        // Re-initialize feather icons
+        feather.replace();
+    }
+
+    updateTrustScoreSparks(trustData) {
+        // Update spark animations based on trust scores
+        this.updateScoreSpark('people-score', trustData.scores.people, 'L3');
+        this.updateScoreSpark('legal-score', trustData.scores.legal, 'L2');
+        this.updateScoreSpark('state-score', trustData.scores.state, 'L2');
+        this.updateScoreSpark('chitty-score', trustData.scores.chitty, 'L4');
+        
+        // Update radar chart spark
+        this.updateRadarSpark(trustData.scores.composite);
+    }
+
+    updateScoreSpark(scoreId, score, defaultLevel) {
+        const scoreCard = document.getElementById(scoreId)?.closest('.trust-score-card');
+        if (!scoreCard) return;
+        
+        const sparkElement = scoreCard.querySelector('.shield-spark');
+        if (sparkElement) {
+            // Determine trust level based on score
+            let level = 'L0';
+            if (score >= 90) level = 'L4';
+            else if (score >= 75) level = 'L3';
+            else if (score >= 50) level = 'L2';
+            else if (score >= 25) level = 'L1';
+            
+            // Update classes
+            sparkElement.className = sparkElement.className.replace(/trust-level-L\d/, `trust-level-${level}`);
+            
+            // Add verification state for high scores
+            if (score >= 85) {
+                sparkElement.classList.add('verification-active');
+            } else if (score >= 60) {
+                sparkElement.classList.remove('verification-active');
+            } else {
+                sparkElement.classList.add('verification-pending');
+            }
+        }
+    }
+
+    updateRadarSpark(compositeScore) {
+        const radarSpark = document.querySelector('.radar-chart-spark');
+        if (radarSpark) {
+            let level = 'L0';
+            if (compositeScore >= 90) level = 'L4';
+            else if (compositeScore >= 75) level = 'L3';
+            else if (compositeScore >= 50) level = 'L2';
+            else if (compositeScore >= 25) level = 'L1';
+            
+            radarSpark.className = `radar-chart-spark shield-spark spark-emanating trust-level-${level}`;
+            
+            if (compositeScore >= 85) {
+                radarSpark.classList.add('verification-active');
+            }
+        }
     }
 
     updateRadarChart(dimensions) {

@@ -16,13 +16,18 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/chitty.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/spark-shield.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/persona-cards.css') }}">
 </head>
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-chitty-dark fixed-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#" style="color: #00ff88;">
-                <i data-feather="shield" class="me-2"></i>
+            <a class="navbar-brand fw-bold chitty-logo" href="#" style="color: #00ff88;">
+                <div class="shield-spark spark-over">
+                    <i data-feather="shield" class="me-1"></i>
+                    <span class="spark"></span>
+                </div>
                 ChittyTrust
             </a>
             <div class="navbar-nav ms-auto">
@@ -140,6 +145,10 @@
                         <div class="card-body d-flex align-items-center justify-content-center">
                             <div style="position: relative; height: 400px; width: 400px;">
                                 <canvas id="trustRadarChart"></canvas>
+                                <div class="radar-chart-spark shield-spark spark-emanating trust-level-L4">
+                                    <i data-feather="shield" class="text-chitty-green"></i>
+                                    <span class="spark"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -155,7 +164,11 @@
                                     <h6 class="text-muted mb-2">Composite Trust Score</h6>
                                     <div class="display-4 text-chitty-green mb-2" id="composite-score">--</div>
                                     <div class="chitty-level-badge" id="chitty-level">
-                                        <!-- Level badge -->
+                                        <div class="shield-spark spark-over trust-level-L4">
+                                            <i data-feather="shield" class="text-chitty-green"></i>
+                                            <span class="spark"></span>
+                                        </div>
+                                        <span>Calculating...</span>
                                     </div>
                                 </div>
                             </div>
@@ -164,7 +177,10 @@
                         <!-- Output Scores -->
                         <div class="col-6">
                             <div class="trust-score-card people-score">
-                                <div class="card bg-dark border-secondary">
+                                <div class="card bg-dark border-secondary position-relative">
+                                    <div class="shield-spark spark-inside trust-level-L3">
+                                        <span class="spark"></span>
+                                    </div>
                                     <div class="card-body text-center">
                                         <i data-feather="heart" class="mb-2 text-danger"></i>
                                         <h6 class="text-muted mb-1">People's Score</h6>
@@ -203,7 +219,11 @@
 
                         <div class="col-6">
                             <div class="trust-score-card chitty-score">
-                                <div class="card bg-dark border-chitty-green">
+                                <div class="card bg-dark border-chitty-green position-relative">
+                                    <div class="shield-spark spark-emanating trust-level-L4">
+                                        <i data-feather="shield" class="text-chitty-green"></i>
+                                        <span class="spark"></span>
+                                    </div>
                                     <div class="card-body text-center">
                                         <i data-feather="star" class="mb-2 text-chitty-green"></i>
                                         <h6 class="text-muted mb-1">Chitty Score™</h6>
@@ -244,7 +264,10 @@
                         <div class="card bg-dark border-chitty-blue h-100">
                             <div class="card-body">
                                 <div class="dimension-icon text-chitty-blue mb-3">
-                                    <i data-feather="user-check"></i>
+                                    <div class="shield-spark spark-over trust-level-L3">
+                                        <i data-feather="user-check"></i>
+                                        <span class="spark"></span>
+                                    </div>
                                 </div>
                                 <h5 class="text-white">Source (Who)</h5>
                                 <p class="text-muted">Identity verification, credentials, and professional certifications. Who are you really?</p>
@@ -283,7 +306,10 @@
                         <div class="card bg-dark border-chitty-green h-100">
                             <div class="card-body">
                                 <div class="dimension-icon text-chitty-green mb-3">
-                                    <i data-feather="target"></i>
+                                    <div class="shield-spark spark-emanating trust-level-L4">
+                                        <i data-feather="target"></i>
+                                        <span class="spark"></span>
+                                    </div>
                                 </div>
                                 <h5 class="text-white">Outcome (Results)</h5>
                                 <p class="text-muted">Track record of positive/negative outcomes. Results speak louder than promises.</p>
@@ -309,7 +335,10 @@
                         <div class="card bg-dark border-chitty-green h-100">
                             <div class="card-body">
                                 <div class="dimension-icon text-chitty-green mb-3">
-                                    <i data-feather="award"></i>
+                                    <div class="shield-spark spark-inside trust-level-L4">
+                                        <i data-feather="award"></i>
+                                        <span class="spark"></span>
+                                    </div>
                                 </div>
                                 <h5 class="text-white">Justice (Impact)</h5>
                                 <p class="text-muted">Alignment with justice principles and positive societal impact. The ultimate measure.</p>
