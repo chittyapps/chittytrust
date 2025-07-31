@@ -1,8 +1,12 @@
 import os
 import logging
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, session, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.middleware.proxy_fix import ProxyFix
 from datetime import datetime
 import asyncio
+import requests
+import jwt
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -15,15 +19,53 @@ from demo_data import get_persona_data
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "chitty-trust-demo-key")
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
+# Database configuration
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_recycle": 300,
+    "pool_pre_ping": True,
+}
+
+# Import models after Flask app configuration
+from models import db, User, VerificationRequest, TrustHistory, VerifierProfile, ChittyCoin
+
+# Initialize database
+db.init_app(app)
+
+with app.app_context():
+    db.create_all()
+    
+    # Initialize sample data on first run
+    from models import User
+    if User.query.count() == 0:
+        try:
+            from sample_data import initialize_sample_data
+            initialize_sample_data()
+            logging.info("Sample data initialized successfully")
+        except Exception as e:
+            logging.error(f"Failed to initialize sample data: {e}")
 
 # Initialize analytics engines
 analytics_engine = TrustAnalytics()
 viz_engine = TrustVisualizationEngine()
 
+# Import marketplace services
+from marketplace import MarketplaceService, TrustHistoryService, VerifierService
+from auth import require_auth, get_current_user, is_authenticated
+
 @app.route('/')
 def index():
     """Main trust engine dashboard."""
-    return render_template('index.html')
+    # Check if user is authenticated for personalized experience
+    authenticated = is_authenticated()
+    current_user = get_current_user() if authenticated else None
+    
+    return render_template('index.html', 
+                         authenticated=authenticated, 
+                         current_user=current_user)
 
 @app.route('/api/trust/<persona_id>')
 def get_trust_score(persona_id):
@@ -57,6 +99,160 @@ def get_trust_score(persona_id):
     except Exception as e:
         logging.error(f"Error calculating trust for {persona_id}: {str(e)}")
         return jsonify({'error': 'Trust calculation failed'}), 500
+
+# ChittyID Marketplace API Routes
+
+@app.route('/marketplace')
+def marketplace():
+    """ChittyID Verification Marketplace"""
+    return render_template('marketplace.html')
+
+@app.route('/api/marketplace/requests', methods=['GET'])
+def get_marketplace_requests():
+    """Get available verification requests"""
+    verification_type = request.args.get('type')
+    status = request.args.get('status', 'open')
+    limit = int(request.args.get('limit', 20))
+    
+    requests = MarketplaceService.get_marketplace_requests(limit, verification_type, status)
+    
+    return jsonify([{
+        'id': req.id,
+        'title': req.title,
+        'description': req.description,
+        'verification_type': req.verification_type,
+        'reward_amount': req.reward_amount,
+        'status': req.status,
+        'priority': req.priority,
+        'deadline': req.deadline.isoformat() if req.deadline else None,
+        'created_at': req.created_at.isoformat(),
+        'user': {
+            'name': f"{req.user.first_name} {req.user.last_name}".strip() or req.user.email,
+            'trust_level': req.user.verification_level
+        }
+    } for req in requests])
+
+@app.route('/api/marketplace/requests', methods=['POST'])
+@require_auth
+def create_verification_request():
+    """Create new verification request"""
+    user = get_current_user()
+    data = request.get_json()
+    
+    try:
+        verification_request = MarketplaceService.create_verification_request(user.id, data)
+        
+        return jsonify({
+            'id': verification_request.id,
+            'message': 'Verification request created successfully'
+        }), 201
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/api/marketplace/requests/<int:request_id>/claim', methods=['POST'])
+@require_auth
+def claim_verification_request(request_id):
+    """Claim a verification request"""
+    user = get_current_user()
+    
+    success, message = MarketplaceService.claim_verification_request(request_id, user.id)
+    
+    if success:
+        return jsonify({'message': message})
+    else:
+        return jsonify({'error': message}), 400
+
+@app.route('/api/user/trust-history')
+@require_auth
+def get_user_trust_history():
+    """Get user's trust history"""
+    user = get_current_user()
+    days_back = int(request.args.get('days', 30))
+    
+    history = TrustHistoryService.get_trust_history(user.id, days_back)
+    trends = TrustHistoryService.get_trust_trends(user.id, 7)
+    
+    return jsonify({
+        'history': [{
+            'recorded_at': entry.recorded_at.isoformat(),
+            'dimensions': {
+                'source': entry.source_trust,
+                'temporal': entry.temporal_trust,
+                'channel': entry.channel_trust,
+                'outcome': entry.outcome_trust,
+                'network': entry.network_trust,
+                'justice': entry.justice_trust
+            },
+            'scores': {
+                'composite': entry.composite_score,
+                'people': entry.people_score,
+                'legal': entry.legal_score,
+                'state': entry.state_score,
+                'chitty': entry.chitty_score
+            },
+            'trigger_event': entry.trigger_event,
+            'confidence': entry.confidence_level
+        } for entry in history],
+        'trends': trends
+    })
+
+@app.route('/api/user/trust-calculate', methods=['POST'])
+@require_auth
+def calculate_user_trust():
+    """Calculate and record user's trust score"""
+    user = get_current_user()
+    data = request.get_json()
+    trigger_event = data.get('trigger_event', 'manual_calculation')
+    
+    try:
+        # Run async trust calculation
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        trust_data, history_entry = loop.run_until_complete(
+            TrustHistoryService.calculate_and_record_trust(
+                user.id, trigger_event
+            )
+        )
+        loop.close()
+        
+        return jsonify({
+            'trust_data': trust_data,
+            'history_id': history_entry.id,
+            'message': 'Trust score calculated and recorded'
+        })
+        
+    except Exception as e:
+        logging.error(f"Trust calculation failed for user {user.id}: {e}")
+        return jsonify({'error': 'Trust calculation failed'}), 500
+
+@app.route('/api/user/profile')
+@require_auth
+def get_user_profile():
+    """Get user profile with trust data"""
+    user = get_current_user()
+    
+    # Get recent trust trends
+    trends = TrustHistoryService.get_trust_trends(user.id, 7)
+    
+    # Get user's requests
+    user_requests = MarketplaceService.get_user_requests(user.id)
+    
+    return jsonify({
+        'user': {
+            'id': user.id,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'chitty_id': user.chitty_id,
+            'verification_level': user.verification_level,
+            'trust_score': user.trust_score,
+            'profile_image_url': user.profile_image_url
+        },
+        'trust_trends': trends,
+        'verification_requests': len(user_requests),
+        'active_requests': len([r for r in user_requests if r.status in ['open', 'claimed', 'in_progress']])
+    })
 
 @app.route('/api/personas')
 def get_personas():
