@@ -117,6 +117,155 @@ def onboarding():
     """Developer Onboarding Guide"""
     return render_template('onboarding.html')
 
+@app.route('/enterprise')
+def enterprise():
+    """Enterprise Dashboard"""
+    return render_template('enterprise.html')
+
+# ChittyChain Blockchain Integration Endpoints
+
+@app.route('/api/blockchain/trust-passport/<user_id>')
+def get_trust_passport(user_id):
+    """Get blockchain-verified trust passport for cross-platform use"""
+    try:
+        from chittychain import chittychain_client
+        passport = chittychain_client.create_trust_passport(user_id)
+        return jsonify(passport)
+    except Exception as e:
+        logging.error(f"Trust passport generation failed: {e}")
+        return jsonify({'error': 'Trust passport generation failed'}), 500
+
+@app.route('/api/blockchain/verify/<transaction_id>')
+def verify_blockchain_record(transaction_id):
+    """Verify trust record on blockchain"""
+    try:
+        from chittychain import chittychain_client
+        verification = chittychain_client.verify_trust_record(transaction_id)
+        return jsonify(verification)
+    except Exception as e:
+        logging.error(f"Blockchain verification failed: {e}")
+        return jsonify({'error': 'Blockchain verification failed'}), 500
+
+@app.route('/api/blockchain/history/<user_id>')
+def get_blockchain_history(user_id):
+    """Get complete blockchain trust history"""
+    try:
+        from chittychain import chittychain_client
+        limit = request.args.get('limit', 50, type=int)
+        history = chittychain_client.get_user_trust_history(user_id, limit)
+        return jsonify({'history': history, 'blockchain_verified': True})
+    except Exception as e:
+        logging.error(f"Blockchain history query failed: {e}")
+        return jsonify({'error': 'Blockchain history query failed'}), 500
+
+# Notion Enterprise Integration Endpoints
+
+@app.route('/api/enterprise/audit/<user_id>', methods=['POST'])
+def create_enterprise_audit(user_id):
+    """Create comprehensive enterprise audit documentation"""
+    try:
+        from notion_integration import notion_integration
+        
+        # Get current trust data
+        entity, events = get_persona_data(user_id.split('_')[0])  # Extract persona from user_id
+        if not entity:
+            return jsonify({'error': 'User not found'}), 404
+        
+        trust_data = asyncio.run(calculate_trust(entity, events))
+        
+        # Create Notion audit page
+        page_id = notion_integration.create_trust_audit_page(
+            user_id, 
+            trust_data,
+            {'audit_type': 'comprehensive', 'requested_by': 'enterprise_customer'}
+        )
+        
+        if page_id:
+            return jsonify({
+                'audit_created': True,
+                'notion_page_id': page_id,
+                'trust_data': trust_data
+            })
+        else:
+            return jsonify({'error': 'Audit creation failed'}), 500
+            
+    except Exception as e:
+        logging.error(f"Enterprise audit creation failed: {e}")
+        return jsonify({'error': 'Enterprise audit creation failed'}), 500
+
+@app.route('/api/enterprise/compliance-report', methods=['POST'])
+def generate_compliance_report():
+    """Generate enterprise compliance report in Notion"""
+    try:
+        from notion_integration import notion_integration
+        
+        data = request.get_json()
+        organization_id = data.get('organization_id', 'demo_org')
+        
+        # Calculate compliance metrics
+        users = User.query.all()
+        report_data = {
+            'total_users': len(users),
+            'average_trust_score': sum(u.trust_score or 0 for u in users) / len(users) if users else 0,
+            'compliance_status': 'Compliant' if len(users) > 0 else 'Pending',
+            'high_trust_users': len([u for u in users if (u.trust_score or 0) >= 80]),
+            'verification_coverage': '95%'  # Demo data
+        }
+        
+        # Create Notion compliance report
+        page_id = notion_integration.create_compliance_report(organization_id, report_data)
+        
+        if page_id:
+            return jsonify({
+                'report_created': True,
+                'notion_page_id': page_id,
+                'metrics': report_data
+            })
+        else:
+            return jsonify({'error': 'Compliance report creation failed'}), 500
+            
+    except Exception as e:
+        logging.error(f"Compliance report generation failed: {e}")
+        return jsonify({'error': 'Compliance report generation failed'}), 500
+
+@app.route('/api/enterprise/workflow/<int:request_id>')
+def document_verification_workflow(request_id):
+    """Document verification workflow in Notion for audit trail"""
+    try:
+        from notion_integration import notion_integration
+        
+        # Get verification request
+        verification_request = VerificationRequest.query.get(request_id)
+        if not verification_request:
+            return jsonify({'error': 'Verification request not found'}), 404
+        
+        # Convert to dict for Notion documentation
+        workflow_data = {
+            'title': verification_request.title,
+            'description': verification_request.description,
+            'verification_type': verification_request.verification_type,
+            'status': verification_request.status,
+            'created_at': verification_request.created_at.isoformat(),
+            'reward_amount': verification_request.reward_amount,
+            'priority': verification_request.priority
+        }
+        
+        # Create Notion workflow documentation
+        page_id = notion_integration.create_verification_workflow(request_id, workflow_data)
+        
+        if page_id:
+            return jsonify({
+                'workflow_documented': True,
+                'notion_page_id': page_id,
+                'workflow_data': workflow_data
+            })
+        else:
+            return jsonify({'error': 'Workflow documentation failed'}), 500
+            
+    except Exception as e:
+        logging.error(f"Workflow documentation failed: {e}")
+        return jsonify({'error': 'Workflow documentation failed'}), 500
+
 @app.route('/api/marketplace/requests', methods=['GET'])
 def get_marketplace_requests():
     """Get available verification requests"""

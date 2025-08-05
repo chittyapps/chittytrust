@@ -7,6 +7,8 @@ from sqlalchemy import desc, func
 from models import db, User, VerificationRequest, TrustHistory, VerifierProfile, ChittyCoin
 from src.chitty_trust import calculate_trust
 from demo_data import get_persona_data
+from chittychain import chittychain_client
+from notion_integration import notion_integration
 import asyncio
 import json
 
