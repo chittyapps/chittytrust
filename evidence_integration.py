@@ -22,7 +22,7 @@ class EvidenceLedgerIntegration:
             'Notion-Version': '2022-06-28'
         }
         
-    def record_trust_evidence(self, user_id: str, trust_data: Dict, blockchain_tx: str = None) -> Optional[str]:
+    def record_trust_evidence(self, user_id: str, trust_data: Dict, blockchain_tx: Optional[str] = None) -> Optional[str]:
         """Record trust evidence in the ChittyChain Evidence Ledger"""
         try:
             # Create comprehensive evidence entry
@@ -142,7 +142,7 @@ class EvidenceLedgerIntegration:
             logging.error(f"Integration snippets page creation failed: {e}")
             return None
     
-    def _build_evidence_blocks(self, user_id: str, trust_data: Dict, blockchain_tx: str = None) -> List[Dict]:
+    def _build_evidence_blocks(self, user_id: str, trust_data: Dict, blockchain_tx: Optional[str] = None) -> List[Dict]:
         """Build evidence documentation blocks"""
         blocks = [
             {
@@ -422,7 +422,7 @@ class EvidenceLedgerIntegration:
             }
         ]
     
-    def _make_notion_request(self, method: str, endpoint: str, data: Dict = None) -> Optional[Dict]:
+    def _make_notion_request(self, method: str, endpoint: str, data: Optional[Dict] = None) -> Optional[Dict]:
         """Make authenticated request to Notion API"""
         try:
             url = f"{self.base_url}{endpoint}"

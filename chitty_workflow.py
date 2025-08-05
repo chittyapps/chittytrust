@@ -205,7 +205,7 @@ class ChittyWorkflow:
             evidence_id = evidence_ledger.record_trust_evidence(
                 user_id,
                 workflow_documentation,
-                blockchain_result.get('transaction_id')
+                blockchain_result.get('transaction_id') or 'no_blockchain_tx'
             )
             
             return {
@@ -228,15 +228,24 @@ class ChittyWorkflow:
                 user.chitty_level = trust_data['verification_level']
                 user.last_calculated = datetime.utcnow()
             
-            # Create trust history record (adjust fields based on actual model)
-            trust_record = TrustHistory(
-                user_id=user.id if user else None,
-                composite_score=trust_data['scores']['composite'],
-                chitty_score=trust_data['scores']['chitty'],
-                trigger_event='chitty_workflow_execution',
-                blockchain_tx=blockchain_tx,
-                recorded_at=datetime.utcnow()
-            )
+            # Create trust history record with all required fields
+            trust_record = TrustHistory()
+            trust_record.user_id = user.id if user else None
+            trust_record.source_trust = trust_data['dimensions']['source']
+            trust_record.temporal_trust = trust_data['dimensions']['temporal'] 
+            trust_record.channel_trust = trust_data['dimensions']['channel']
+            trust_record.outcome_trust = trust_data['dimensions']['outcome']
+            trust_record.network_trust = trust_data['dimensions']['network']
+            trust_record.justice_trust = trust_data['dimensions']['justice']
+            trust_record.composite_score = trust_data['scores']['composite']
+            trust_record.people_score = trust_data['scores']['people']
+            trust_record.legal_score = trust_data['scores']['legal']
+            trust_record.state_score = trust_data['scores']['state']
+            trust_record.chitty_score = trust_data['scores']['chitty']
+            trust_record.trigger_event = 'chitty_workflow_execution'
+            trust_record.calculation_method = 'chitty_integrated_workflow'
+            trust_record.confidence_level = 0.95
+            trust_record.recorded_at = datetime.utcnow()
             
             db.session.add(trust_record)
             db.session.commit()
