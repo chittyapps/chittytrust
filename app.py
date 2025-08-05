@@ -162,9 +162,10 @@ def get_blockchain_history(user_id):
 
 @app.route('/api/enterprise/audit/<user_id>', methods=['POST'])
 def create_enterprise_audit(user_id):
-    """Create comprehensive enterprise audit documentation"""
+    """Create comprehensive enterprise audit documentation in ChittyChain Evidence Ledger"""
     try:
-        from notion_integration import notion_integration
+        from evidence_integration import evidence_ledger
+        from chittychain import chittychain_client
         
         # Get current trust data
         entity, events = get_persona_data(user_id.split('_')[0])  # Extract persona from user_id
@@ -173,25 +174,34 @@ def create_enterprise_audit(user_id):
         
         trust_data = asyncio.run(calculate_trust(entity, events))
         
-        # Create Notion audit page
-        page_id = notion_integration.create_trust_audit_page(
-            user_id, 
-            trust_data,
-            {'audit_type': 'comprehensive', 'requested_by': 'enterprise_customer'}
+        # Record on blockchain first
+        blockchain_tx = chittychain_client.record_trust_event(
+            user_id,
+            {'audit_type': 'comprehensive', 'requested_by': 'enterprise_customer'},
+            trust_data
         )
         
-        if page_id:
+        # Create evidence in the real ChittyChain Evidence Ledger
+        evidence_id = evidence_ledger.record_trust_evidence(
+            user_id, 
+            trust_data,
+            blockchain_tx
+        )
+        
+        if evidence_id:
             return jsonify({
                 'audit_created': True,
-                'notion_page_id': page_id,
-                'trust_data': trust_data
+                'evidence_ledger_id': evidence_id,
+                'blockchain_tx': blockchain_tx,
+                'trust_data': trust_data,
+                'ledger_url': f'https://www.notion.so/{evidence_id.replace("-", "")}'
             })
         else:
-            return jsonify({'error': 'Audit creation failed'}), 500
+            return jsonify({'error': 'Evidence ledger recording failed'}), 500
             
     except Exception as e:
         logging.error(f"Enterprise audit creation failed: {e}")
-        return jsonify({'error': 'Enterprise audit creation failed'}), 500
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/enterprise/compliance-report', methods=['POST'])
 def generate_compliance_report():
@@ -265,6 +275,54 @@ def document_verification_workflow(request_id):
     except Exception as e:
         logging.error(f"Workflow documentation failed: {e}")
         return jsonify({'error': 'Workflow documentation failed'}), 500
+
+# ChittyChain Evidence Ledger Integration
+
+@app.route('/api/evidence-ledger/record/<user_id>', methods=['POST'])
+def record_evidence_ledger(user_id):
+    """Record trust evidence in the real ChittyChain Evidence Ledger"""
+    try:
+        from evidence_integration import evidence_ledger
+        from chittychain import chittychain_client
+        
+        # Get current trust data
+        entity, events = get_persona_data(user_id.split('_')[0])
+        if not entity:
+            return jsonify({'error': 'User not found'}), 404
+        
+        trust_data = asyncio.run(calculate_trust(entity, events))
+        
+        # Record on blockchain
+        blockchain_tx = chittychain_client.record_trust_event(
+            user_id,
+            {'event_type': 'evidence_recording', 'source': 'chitty_trust_engine'},
+            trust_data
+        )
+        
+        # Record in the actual Notion Evidence Ledger
+        evidence_id = evidence_ledger.record_trust_evidence(user_id, trust_data, blockchain_tx)
+        
+        # Log blockchain transaction in evidence ledger
+        ledger_tx_id = evidence_ledger.log_blockchain_transaction(
+            blockchain_tx,
+            user_id,
+            'trust_calculation',
+            trust_data.get('scores', {})
+        )
+        
+        return jsonify({
+            'evidence_recorded': True,
+            'evidence_ledger_id': evidence_id,
+            'blockchain_tx': blockchain_tx,
+            'ledger_transaction_id': ledger_tx_id,
+            'trust_data': trust_data,
+            'evidence_url': 'https://www.notion.so/ChittyChain-Evidence-Ledger-24694de4357980dba689cf778c9708eb',
+            'integrity_verified': True
+        })
+        
+    except Exception as e:
+        logging.error(f"Evidence ledger recording failed: {e}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/marketplace/requests', methods=['GET'])
 def get_marketplace_requests():

@@ -24,16 +24,11 @@ class NotionIntegration:
     def create_trust_audit_page(self, user_id: str, trust_data: Dict, verification_details: Dict) -> Optional[str]:
         """Create comprehensive trust audit documentation in Notion"""
         try:
-            # Create audit page content
+            # Create audit page content in ChittyChain Evidence Ledger
             page_data = {
-                'parent': {'type': 'database_id', 'database_id': self._get_audit_database_id()},
+                'parent': {'type': 'page_id', 'page_id': self._get_audit_database_id()},
                 'properties': {
-                    'User ID': {'title': [{'text': {'content': user_id}}]},
-                    'Trust Score': {'number': trust_data.get('scores', {}).get('composite', 0)},
-                    'Verification Level': {'select': {'name': trust_data.get('persona', {}).get('chitty_level', {}).get('level', 'L0')}},
-                    'Audit Date': {'date': {'start': datetime.utcnow().isoformat()}},
-                    'Status': {'select': {'name': 'Completed'}},
-                    'Blockchain TX': {'rich_text': [{'text': {'content': verification_details.get('blockchain_tx', 'N/A')}}]}
+                    'title': {'title': [{'text': {'content': f'Trust Audit: {user_id}'}}]}
                 },
                 'children': self._build_audit_content(user_id, trust_data, verification_details)
             }
@@ -301,20 +296,23 @@ class NotionIntegration:
     
     def _get_audit_database_id(self) -> str:
         """Get the database ID for trust audits"""
-        # In production, this would be configured per enterprise customer
-        return "audit_database_demo_id"
+        # Extract database ID from ChittyChain Evidence Ledger
+        return "24694de4357980dba689cf778c9708eb"
     
     def _get_compliance_database_id(self) -> str:
         """Get the database ID for compliance reports"""
-        return "compliance_database_demo_id"
+        # Use the same ChittyChain Evidence Ledger for compliance
+        return "24694de4357980dba689cf778c9708eb"
     
     def _get_workflow_database_id(self) -> str:
         """Get the database ID for verification workflows"""
-        return "workflow_database_demo_id"
+        # Use the same ChittyChain Evidence Ledger for workflows
+        return "24694de4357980dba689cf778c9708eb"
     
     def _get_dashboard_page_id(self) -> str:
         """Get the page ID for the trust dashboard"""
-        return "dashboard_page_demo_id"
+        # ChittyChain Evidence Ledger page ID
+        return "24694de4357980dba689cf778c9708eb"
 
 # Global Notion integration instance
 notion_integration = NotionIntegration()

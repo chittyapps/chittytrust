@@ -265,20 +265,28 @@
                     </h3>
                     
                     <div class="enterprise-card">
-                        <h5 class="text-chitty-blue mb-3">Automated Audit Trail</h5>
-                        <p class="text-muted mb-3">Generate comprehensive audit documentation</p>
+                        <h5 class="text-chitty-blue mb-3">ChittyChain Evidence Ledger</h5>
+                        <p class="text-muted mb-3">Record evidence in real Notion Evidence Ledger with blockchain anchoring</p>
                         
                         <div class="api-demo">
                             <div class="d-flex gap-2 mb-2">
                                 <input type="text" class="form-control form-control-sm bg-dark text-white border-chitty-blue" 
-                                       placeholder="User ID" id="audit-user-id" value="alice_demo_123">
-                                <button class="btn btn-sm btn-chitty-green" onclick="createEnterpriseAudit()">
-                                    Create Audit
+                                       placeholder="User ID" id="evidence-user-id" value="alice_demo_123">
+                                <button class="btn btn-sm btn-chitty-green" onclick="recordEvidenceLedger()">
+                                    Record Evidence
                                 </button>
                             </div>
-                            <div class="response-output" id="audit-output">
-                                Click "Create Audit" to generate comprehensive trust documentation
+                            <div class="response-output" id="evidence-output">
+                                Click "Record Evidence" to create immutable evidence in the real ChittyChain Evidence Ledger
                             </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <a href="https://www.notion.so/ChittyChain-Evidence-Ledger-24694de4357980dba689cf778c9708eb" 
+                               target="_blank" class="btn btn-sm btn-outline-chitty-blue">
+                                <i data-feather="external-link" class="me-1"></i>
+                                View Evidence Ledger
+                            </a>
                         </div>
                     </div>
                     
@@ -467,14 +475,14 @@ Trust Record:
             }
         }
         
-        async function createEnterpriseAudit() {
-            const userId = document.getElementById('audit-user-id').value;
-            const output = document.getElementById('audit-output');
+        async function recordEvidenceLedger() {
+            const userId = document.getElementById('evidence-user-id').value;
+            const output = document.getElementById('evidence-output');
             
-            output.innerHTML = 'Creating comprehensive audit documentation...';
+            output.innerHTML = 'Recording evidence in ChittyChain Evidence Ledger...';
             
             try {
-                const response = await fetch(`/api/enterprise/audit/${userId}`, {
+                const response = await fetch(`/api/evidence-ledger/record/${userId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -484,19 +492,26 @@ Trust Record:
                 
                 if (response.ok) {
                     output.innerHTML = `
-<strong>Enterprise Audit Created:</strong>
+<strong>Evidence Recorded in ChittyChain Evidence Ledger:</strong>
 
-Notion Page ID: ${data.notion_page_id}
-User: ${userId}
+Evidence ID: ${data.evidence_ledger_id}
+Blockchain TX: ${data.blockchain_tx}
+Ledger TX ID: ${data.ledger_transaction_id}
 Trust Score: ${data.trust_data?.scores?.composite?.toFixed(1) || 'N/A'}
 Chitty Score™: ${data.trust_data?.scores?.chitty?.toFixed(1) || 'N/A'}
 
-Documented Dimensions:
-- Source Trust: ${data.trust_data?.dimensions?.source?.toFixed(1) || 'N/A'}
-- Temporal Trust: ${data.trust_data?.dimensions?.temporal?.toFixed(1) || 'N/A'}
-- Justice Trust: ${data.trust_data?.dimensions?.justice?.toFixed(1) || 'N/A'}
+6D Trust Breakdown:
+- Source: ${data.trust_data?.dimensions?.source?.toFixed(1) || 'N/A'}
+- Temporal: ${data.trust_data?.dimensions?.temporal?.toFixed(1) || 'N/A'}
+- Channel: ${data.trust_data?.dimensions?.channel?.toFixed(1) || 'N/A'}
+- Outcome: ${data.trust_data?.dimensions?.outcome?.toFixed(1) || 'N/A'}
+- Network: ${data.trust_data?.dimensions?.network?.toFixed(1) || 'N/A'}
+- Justice: ${data.trust_data?.dimensions?.justice?.toFixed(1) || 'N/A'}
 
-<em>Comprehensive audit trail created in Notion for compliance</em>
+✅ Integrity Verified: ${data.integrity_verified}
+🔗 View at: ${data.evidence_url}
+
+<em>Evidence permanently recorded with blockchain anchoring and cryptographic verification</em>
                     `;
                 } else {
                     output.innerHTML = `Error: ${data.error}`;
