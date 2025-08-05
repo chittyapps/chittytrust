@@ -1,6 +1,10 @@
 """
-ChittyTrust Integration Snippets for Team Collaboration
-Ready-to-use code snippets for blockchain and Notion integration
+ChittyTrust Integration Package for Team Collaboration
+Complete integration suite with ready-to-use code snippets for:
+- Blockchain verification and trust passports
+- Evidence ledger documentation  
+- 6D trust calculations
+- Compliance and API integration
 """
 
 # Example 1: Basic Trust Passport Generation

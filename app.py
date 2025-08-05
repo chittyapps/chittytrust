@@ -122,6 +122,43 @@ def enterprise():
     """Enterprise Dashboard"""
     return render_template('enterprise.html')
 
+# ChittyTrust Integration Package Endpoints
+
+@app.route('/api/integration/package')
+def get_integration_package():
+    """Get ChittyTrust Integration Package information"""
+    from integrations import ChittyTrustIntegration
+    from integrations.snippets import get_quick_start_guide, generate_integration_snippets
+    
+    snippets = generate_integration_snippets()
+    quick_start = get_quick_start_guide()
+    
+    return jsonify({
+        'package_name': 'ChittyTrust Integration Package',
+        'version': '1.0.0',
+        'description': 'Complete integration suite for blockchain verification and evidence ledger',
+        'quick_start_guide': quick_start,
+        'available_snippets': list(snippets.keys()),
+        'documentation_url': 'https://www.notion.so/ChittyChain-Evidence-Ledger-24694de4357980dba689cf778c9708eb',
+        'features': [
+            'Blockchain-verified trust passports',
+            'Evidence ledger documentation',  
+            '6D trust calculations',
+            'Compliance and API integration',
+            'Ready-to-use code snippets'
+        ]
+    })
+
+@app.route('/api/integration/snippets')
+def get_integration_snippets():
+    """Get all integration code snippets"""
+    from integrations.snippets import generate_integration_snippets
+    
+    return jsonify({
+        'snippets': generate_integration_snippets(),
+        'usage': 'Copy and paste these snippets into your codebase for instant ChittyTrust integration'
+    })
+
 # ChittyChain Blockchain Integration Endpoints
 
 @app.route('/api/blockchain/trust-passport/<user_id>')
@@ -173,18 +210,19 @@ def create_enterprise_audit(user_id):
             return jsonify({'error': 'User not found'}), 404
         
         trust_data = asyncio.run(calculate_trust(entity, events))
+        trust_dict = trust_data.__dict__ if hasattr(trust_data, '__dict__') else trust_data
         
         # Record on blockchain first
         blockchain_tx = chittychain_client.record_trust_event(
             user_id,
             {'audit_type': 'comprehensive', 'requested_by': 'enterprise_customer'},
-            trust_data
+            trust_dict
         )
         
         # Create evidence in the real ChittyChain Evidence Ledger
         evidence_id = evidence_ledger.record_trust_evidence(
             user_id, 
-            trust_data,
+            trust_dict,
             blockchain_tx
         )
         
@@ -193,7 +231,7 @@ def create_enterprise_audit(user_id):
                 'audit_created': True,
                 'evidence_ledger_id': evidence_id,
                 'blockchain_tx': blockchain_tx,
-                'trust_data': trust_data,
+                'trust_data': trust_dict,
                 'ledger_url': f'https://www.notion.so/{evidence_id.replace("-", "")}'
             })
         else:
@@ -291,23 +329,24 @@ def record_evidence_ledger(user_id):
             return jsonify({'error': 'User not found'}), 404
         
         trust_data = asyncio.run(calculate_trust(entity, events))
+        trust_dict = trust_data.__dict__ if hasattr(trust_data, '__dict__') else trust_data
         
         # Record on blockchain
         blockchain_tx = chittychain_client.record_trust_event(
             user_id,
             {'event_type': 'evidence_recording', 'source': 'chitty_trust_engine'},
-            trust_data
+            trust_dict
         )
         
         # Record in the actual Notion Evidence Ledger
-        evidence_id = evidence_ledger.record_trust_evidence(user_id, trust_data, blockchain_tx)
+        evidence_id = evidence_ledger.record_trust_evidence(user_id, trust_dict, blockchain_tx)
         
         # Log blockchain transaction in evidence ledger
         ledger_tx_id = evidence_ledger.log_blockchain_transaction(
             blockchain_tx,
             user_id,
             'trust_calculation',
-            trust_data.get('scores', {})
+            trust_dict.get('scores', {}) if isinstance(trust_dict, dict) else {}
         )
         
         return jsonify({
@@ -315,7 +354,7 @@ def record_evidence_ledger(user_id):
             'evidence_ledger_id': evidence_id,
             'blockchain_tx': blockchain_tx,
             'ledger_transaction_id': ledger_tx_id,
-            'trust_data': trust_data,
+            'trust_data': trust_dict,
             'evidence_url': 'https://www.notion.so/ChittyChain-Evidence-Ledger-24694de4357980dba689cf778c9708eb',
             'integrity_verified': True
         })
