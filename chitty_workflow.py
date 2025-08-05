@@ -6,10 +6,10 @@ ChittyID → ChittyTrust → ChittyVerify → ChittyChain
 
 Architecture:
 - Evidence Ledger: Unverified/unminted database of evidence
-- ChittyID: Identity verification (first step)
+- ChittyID: Identity verification (first)
 - ChittyTrust: 6D trust score calculation  
-- ChittyVerify: Data integrity validation
-- ChittyChain: Immutable blockchain recording (final step)
+- ChittyVerify: Data integrity validation (just before ChittyChain)
+- ChittyChain: Immutable blockchain recording (last)
 """
 import os
 import json
@@ -39,12 +39,12 @@ class ChittyWorkflow:
             if not trust_result['success']:
                 return {'workflow_id': workflow_id, 'status': 'failed', 'error': trust_result['error']}
             
-            # Step 2: ChittyVerify - Verify trust calculation integrity
+            # Step 2: ChittyVerify - Verify trust calculation integrity (just before ChittyChain)
             verification_result = self._chitty_verify_process(user_id, trust_result['data'])
             if not verification_result['success']:
                 return {'workflow_id': workflow_id, 'status': 'failed', 'error': verification_result['error']}
             
-            # Step 3: ChittyChain - Record on blockchain for immutability
+            # Step 3: ChittyChain - Record on blockchain for immutability (final step)
             blockchain_result = self._chitty_chain_recording(user_id, trust_result['data'], verification_result['verification_hash'])
             
             # Step 4: Evidence Ledger - Document complete workflow

@@ -123,10 +123,10 @@ The system is designed to be both a working demonstration of 6D trust scoring an
 - **ChittyID first**: Identity verification and user onboarding as entry point to trust ecosystem
 - **ChittyChain last**: Blockchain immutability as final step for verified trust records with cryptographic finality
 - **Workflow architecture**:
-  - ChittyID: Identity verification and credential establishment
-  - ChittyTrust: 6D trust score calculation from verified data
-  - ChittyVerify: Data integrity validation and calculation accuracy checks
-  - ChittyChain: Immutable blockchain recording for audit trails
+  - ChittyID: Identity verification and credential establishment (first)
+  - ChittyTrust: 6D trust score calculation from verified data  
+  - ChittyVerify: Data integrity validation (just before ChittyChain)
+  - ChittyChain: Immutable blockchain recording for audit trails (last)
 - **Evidence processing pipeline**:
   - Evidence Ledger: Unverified/unminted evidence collection
   - Workflow processing: Verification and validation through pipeline
