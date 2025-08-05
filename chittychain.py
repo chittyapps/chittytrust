@@ -42,7 +42,7 @@ class ChittyChainClient:
             
         except Exception as e:
             logging.error(f"ChittyChain recording failed: {e}")
-            return None
+            return ""
     
     def verify_trust_record(self, transaction_id: str) -> Optional[Dict]:
         """Verify a trust record exists on the blockchain"""

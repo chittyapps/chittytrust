@@ -112,6 +112,11 @@ def partners():
     """ChittyID Partners & Integration"""
     return render_template('partners.html')
 
+@app.route('/ledger')
+def ledger():
+    """ChittyChain Ledger Dashboard"""
+    return render_template('ledger.html')
+
 @app.route('/onboarding')
 def onboarding():
     """Developer Onboarding Guide"""
@@ -194,6 +199,174 @@ def get_blockchain_history(user_id):
     except Exception as e:
         logging.error(f"Blockchain history query failed: {e}")
         return jsonify({'error': 'Blockchain history query failed'}), 500
+
+# Enhanced ChittyChain Ledger API Endpoints
+
+@app.route('/api/ledger/entry', methods=['POST'])
+def create_ledger_entry():
+    """Create new entry in ChittyChain Ledger"""
+    try:
+        from chittychain_ledger import chittychain_ledger
+        
+        data = request.get_json()
+        user_id = data.get('user_id')
+        event_type = data.get('event_type', 'trust_update')
+        trust_scores = data.get('trust_scores', {})
+        event_data = data.get('event_data', {})
+        cross_platform_refs = data.get('cross_platform_refs', [])
+        
+        if not user_id or not trust_scores:
+            return jsonify({'error': 'user_id and trust_scores required'}), 400
+        
+        entry_id = asyncio.run(chittychain_ledger.create_ledger_entry(
+            user_id, event_type, trust_scores, event_data, cross_platform_refs
+        ))
+        
+        if entry_id:
+            return jsonify({
+                'success': True,
+                'entry_id': entry_id,
+                'ledger_url': f'/api/ledger/entry/{entry_id}'
+            })
+        else:
+            return jsonify({'error': 'Ledger entry creation failed'}), 500
+            
+    except Exception as e:
+        logging.error(f"Ledger entry creation failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/ledger/user/<user_id>')
+def get_user_ledger_history(user_id):
+    """Get complete ledger history for user across platforms"""
+    try:
+        from chittychain_ledger import chittychain_ledger
+        
+        limit = request.args.get('limit', 100, type=int)
+        include_cross_platform = request.args.get('cross_platform', 'true').lower() == 'true'
+        
+        history = asyncio.run(chittychain_ledger.get_user_ledger_history(
+            user_id, limit, include_cross_platform
+        ))
+        
+        return jsonify({
+            'user_id': user_id,
+            'history': history,
+            'total_entries': len(history),
+            'cross_platform_enabled': include_cross_platform
+        })
+        
+    except Exception as e:
+        logging.error(f"Ledger history query failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/ledger/passport/<user_id>', methods=['POST'])
+def create_trust_passport_v2(user_id):
+    """Create enhanced cross-platform trust passport"""
+    try:
+        from chittychain_ledger import chittychain_ledger
+        
+        data = request.get_json() or {}
+        validity_days = data.get('validity_days', 365)
+        
+        passport = asyncio.run(chittychain_ledger.create_trust_passport_v2(
+            user_id, validity_days
+        ))
+        
+        return jsonify(passport)
+        
+    except Exception as e:
+        logging.error(f"Trust passport v2 creation failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/ledger/passport/verify/<passport_id>')
+def verify_cross_platform_passport(passport_id):
+    """Verify trust passport across platforms"""
+    try:
+        from chittychain_ledger import chittychain_ledger
+        
+        external_platform = request.args.get('platform')
+        
+        verification = asyncio.run(chittychain_ledger.verify_cross_platform_passport(
+            passport_id, external_platform
+        ))
+        
+        return jsonify(verification)
+        
+    except Exception as e:
+        logging.error(f"Cross-platform passport verification failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/ledger/sync', methods=['POST'])
+def sync_external_ledger():
+    """Synchronize with external ChittyChain Ledger"""
+    try:
+        from chittychain_ledger import chittychain_ledger
+        
+        data = request.get_json()
+        external_ledger_url = data.get('ledger_url')
+        sync_user_ids = data.get('user_ids', [])
+        
+        if not external_ledger_url:
+            return jsonify({'error': 'ledger_url required'}), 400
+        
+        sync_result = asyncio.run(chittychain_ledger.sync_with_external_ledger(
+            external_ledger_url, sync_user_ids
+        ))
+        
+        return jsonify(sync_result)
+        
+    except Exception as e:
+        logging.error(f"External ledger sync failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/ledger/analytics')
+def get_ledger_analytics():
+    """Get comprehensive ledger analytics"""
+    try:
+        from chittychain_ledger import chittychain_ledger
+        
+        days_back = request.args.get('days', 30, type=int)
+        analytics = chittychain_ledger.get_ledger_analytics(days_back)
+        
+        return jsonify(analytics)
+        
+    except Exception as e:
+        logging.error(f"Ledger analytics failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/ledger/status')
+def get_ledger_status():
+    """Get ChittyChain Ledger status and health"""
+    try:
+        from chittychain_ledger import chittychain_ledger
+        
+        status = {
+            'service': 'ChittyChain Ledger',
+            'version': '2.0',
+            'status': 'operational',
+            'timestamp': datetime.utcnow().isoformat(),
+            'features': {
+                'cross_platform_sync': True,
+                'blockchain_integration': True,
+                'trust_passports': True,
+                'analytics': True,
+                'real_time_updates': True
+            },
+            'endpoints': {
+                'create_entry': '/api/ledger/entry',
+                'user_history': '/api/ledger/user/<user_id>',
+                'trust_passport': '/api/ledger/passport/<user_id>',
+                'verify_passport': '/api/ledger/passport/verify/<passport_id>',
+                'sync_external': '/api/ledger/sync',
+                'analytics': '/api/ledger/analytics'
+            }
+        }
+        
+        return jsonify(status)
+        
+    except Exception as e:
+        logging.error(f"Ledger status check failed: {e}")
+        return jsonify({'error': str(e)}), 500
 
 # Notion Enterprise Integration Endpoints
 
