@@ -118,28 +118,30 @@ The system is designed to be both a working demonstration of 6D trust scoring an
 ## Recent Changes
 
 ### ChittyChain Integrated Workflow System (August 5, 2025)
-- **Complete workflow integration**: Implemented end-to-end ChittyTrust + ChittyVerify + ChittyChain workflow using shared database
-- **Real database trust calculation**: ChittyTrust calculates 6D scores from actual verification history and user data in the ChittyChain database
-- **Integrity verification system**: ChittyVerify validates data completeness, score consistency, temporal validity, and calculation accuracy
-- **Blockchain immutability**: ChittyChain records verified trust events with cryptographic hashes for audit trails
-- **Evidence ledger documentation**: Automated workflow documentation in real Notion Evidence Ledger (ID: 24694de4357980dba689cf778c9708eb)
-- **Workflow features**:
-  - Single API endpoint executes complete trust verification pipeline
-  - Database-driven trust calculations using real verification records
-  - Multi-layered verification with integrity checks and blockchain anchoring
-  - Automated evidence recording with cryptographic verification
-  - Cross-platform trust passport generation for portability
+- **Complete workflow integration**: Implemented end-to-end ChittyID → ChittyTrust → ChittyVerify → ChittyChain workflow pipeline
+- **Evidence Ledger as unverified database**: Evidence Ledger serves as unverified/unminted database of evidence before workflow processing
+- **ChittyID first**: Identity verification and user onboarding as entry point to trust ecosystem
+- **ChittyChain last**: Blockchain immutability as final step for verified trust records with cryptographic finality
+- **Workflow architecture**:
+  - ChittyID: Identity verification and credential establishment
+  - ChittyTrust: 6D trust score calculation from verified data
+  - ChittyVerify: Data integrity validation and calculation accuracy checks
+  - ChittyChain: Immutable blockchain recording for audit trails
+- **Evidence processing pipeline**:
+  - Evidence Ledger: Unverified/unminted evidence collection
+  - Workflow processing: Verification and validation through pipeline
+  - Blockchain anchoring: Final immutable recording on ChittyChain
 - **Enterprise capabilities**:
-  - Batch processing for multiple users
-  - Real-time workflow status tracking
-  - Comprehensive audit trail documentation
+  - Database-driven trust calculations using real verification records
+  - Multi-layered verification with integrity checks
+  - Automated blockchain anchoring for compliance
   - Integration snippets for team collaboration
 - **API endpoints**: 
   - `/api/chitty-workflow/execute/<user_id>` - Complete workflow execution
   - `/api/chitty-workflow/batch-process` - Batch user processing
   - `/api/evidence-ledger/integration-snippets` - Team collaboration docs
 
-The system now provides a production-ready trust verification workflow that combines database-driven calculations, integrity verification, blockchain immutability, and automated documentation - delivering comprehensive trust infrastructure for enterprise applications.
+The system provides production-ready trust verification workflow where Evidence Ledger serves as the unverified database, ChittyID provides entry verification, and ChittyChain delivers final blockchain immutability.
 
 ### ChittyID Verification Marketplace Implementation (July 31, 2025)
 - **Complete marketplace system**: Implemented full verification request marketplace with PostgreSQL database

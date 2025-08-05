@@ -1,6 +1,15 @@
 """
-ChittyChain Evidence Ledger Workflow System
-Integrated workflow using ChittyTrust and ChittyVerify within the same database
+ChittyChain Integrated Workflow System
+
+Executes the complete trust verification pipeline:
+ChittyID → ChittyTrust → ChittyVerify → ChittyChain
+
+Architecture:
+- Evidence Ledger: Unverified/unminted database of evidence
+- ChittyID: Identity verification (first step)
+- ChittyTrust: 6D trust score calculation  
+- ChittyVerify: Data integrity validation
+- ChittyChain: Immutable blockchain recording (final step)
 """
 import os
 import json
