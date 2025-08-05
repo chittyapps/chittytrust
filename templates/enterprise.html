@@ -260,24 +260,24 @@
                 
                 <div class="col-lg-6">
                     <h3 class="text-chitty-green mb-4">
-                        <i data-feather="book-open" class="me-2"></i>
-                        Notion Enterprise Docs
+                        <i data-feather="zap" class="me-2"></i>
+                        ChittyChain Workflow
                     </h3>
                     
                     <div class="enterprise-card">
-                        <h5 class="text-chitty-blue mb-3">ChittyChain Evidence Ledger</h5>
-                        <p class="text-muted mb-3">Record evidence in real Notion Evidence Ledger with blockchain anchoring</p>
+                        <h5 class="text-chitty-blue mb-3">Integrated Workflow</h5>
+                        <p class="text-muted mb-3">Execute ChittyTrust + ChittyVerify + ChittyChain in one workflow</p>
                         
                         <div class="api-demo">
                             <div class="d-flex gap-2 mb-2">
                                 <input type="text" class="form-control form-control-sm bg-dark text-white border-chitty-blue" 
-                                       placeholder="User ID" id="evidence-user-id" value="alice_demo_123">
-                                <button class="btn btn-sm btn-chitty-green" onclick="recordEvidenceLedger()">
-                                    Record Evidence
+                                       placeholder="ChittyID" id="workflow-user-id" value="user_alice_001">
+                                <button class="btn btn-sm btn-chitty-green" onclick="executeChittyWorkflow()">
+                                    Execute Workflow
                                 </button>
                             </div>
-                            <div class="response-output" id="evidence-output">
-                                Click "Record Evidence" to create immutable evidence in the real ChittyChain Evidence Ledger
+                            <div class="response-output" id="workflow-output">
+                                Execute complete ChittyTrust→ChittyVerify→ChittyChain→Evidence Ledger workflow
                             </div>
                         </div>
                         
@@ -291,19 +291,17 @@
                     </div>
                     
                     <div class="enterprise-card">
-                        <h5 class="text-chitty-blue mb-3">Compliance Reporting</h5>
-                        <p class="text-muted mb-3">Automated compliance reports for enterprise</p>
+                        <h5 class="text-chitty-blue mb-3">Integration Snippets</h5>
+                        <p class="text-muted mb-3">Generate ready-to-use code snippets for team collaboration</p>
                         
                         <div class="api-demo">
                             <div class="d-flex gap-2 mb-2">
-                                <input type="text" class="form-control form-control-sm bg-dark text-white border-chitty-blue" 
-                                       placeholder="Organization ID" id="org-id" value="enterprise_demo">
-                                <button class="btn btn-sm btn-chitty-blue" onclick="generateComplianceReport()">
-                                    Generate Report
+                                <button class="btn btn-sm btn-chitty-blue" onclick="createIntegrationSnippets()">
+                                    Create Snippets Page
                                 </button>
                             </div>
-                            <div class="response-output" id="report-output">
-                                Click "Generate Report" to create enterprise compliance documentation
+                            <div class="response-output" id="snippets-output">
+                                Click "Create Snippets Page" to generate integration documentation for other teams
                             </div>
                         </div>
                     </div>
@@ -475,14 +473,77 @@ Trust Record:
             }
         }
         
-        async function recordEvidenceLedger() {
-            const userId = document.getElementById('evidence-user-id').value;
-            const output = document.getElementById('evidence-output');
+        async function executeChittyWorkflow() {
+            const userId = document.getElementById('workflow-user-id').value;
+            const output = document.getElementById('workflow-output');
             
-            output.innerHTML = 'Recording evidence in ChittyChain Evidence Ledger...';
+            output.innerHTML = 'Executing integrated ChittyChain workflow...';
             
             try {
-                const response = await fetch(`/api/evidence-ledger/record/${userId}`, {
+                const response = await fetch(`/api/chitty-workflow/execute/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        verification_type: 'comprehensive'
+                    })
+                });
+                const data = await response.json();
+                
+                if (response.ok && data.status === 'completed') {
+                    output.innerHTML = `
+<strong>ChittyChain Workflow Completed:</strong>
+
+Workflow ID: ${data.workflow_id}
+User: ${data.trust_calculation?.user_id || userId}
+
+🔍 ChittyTrust Results:
+- Composite Score: ${data.trust_calculation?.scores?.composite?.toFixed(1) || 'N/A'}
+- Chitty Score™: ${data.trust_calculation?.scores?.chitty?.toFixed(1) || 'N/A'}
+- Verification Level: ${data.trust_calculation?.verification_level || 'N/A'}
+
+✅ ChittyVerify Status:
+- Verification Passed: ${data.verification?.verification_passed ? '✅' : '❌'}
+- Integrity Hash: ${data.verification?.verification_hash?.substring(0, 16) || 'N/A'}...
+
+🔗 ChittyChain Recording:
+- Blockchain TX: ${data.blockchain_transaction || 'N/A'}
+- Evidence Ledger ID: ${data.evidence_ledger_id || 'N/A'}
+
+📋 6D Trust Dimensions:
+- Source: ${data.trust_calculation?.dimensions?.source?.toFixed(1) || 'N/A'}
+- Temporal: ${data.trust_calculation?.dimensions?.temporal?.toFixed(1) || 'N/A'}
+- Channel: ${data.trust_calculation?.dimensions?.channel?.toFixed(1) || 'N/A'}
+- Outcome: ${data.trust_calculation?.dimensions?.outcome?.toFixed(1) || 'N/A'}
+- Network: ${data.trust_calculation?.dimensions?.network?.toFixed(1) || 'N/A'}
+- Justice: ${data.trust_calculation?.dimensions?.justice?.toFixed(1) || 'N/A'}
+
+🌐 Complete workflow documented in Evidence Ledger with blockchain verification
+                    `;
+                } else {
+                    output.innerHTML = `
+<strong>Workflow Failed:</strong>
+
+Status: ${data.status}
+Error: ${data.error || 'Unknown error'}
+Workflow ID: ${data.workflow_id || 'N/A'}
+
+<em>Check logs for detailed error information</em>
+                    `;
+                }
+            } catch (error) {
+                output.innerHTML = `Error: ${error.message}`;
+            }
+        }
+        
+        async function createIntegrationSnippets() {
+            const output = document.getElementById('snippets-output');
+            
+            output.innerHTML = 'Creating integration snippets page for team collaboration...';
+            
+            try {
+                const response = await fetch('/api/evidence-ledger/integration-snippets', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -492,68 +553,23 @@ Trust Record:
                 
                 if (response.ok) {
                     output.innerHTML = `
-<strong>Evidence Recorded in ChittyChain Evidence Ledger:</strong>
-
-Evidence ID: ${data.evidence_ledger_id}
-Blockchain TX: ${data.blockchain_tx}
-Ledger TX ID: ${data.ledger_transaction_id}
-Trust Score: ${data.trust_data?.scores?.composite?.toFixed(1) || 'N/A'}
-Chitty Score™: ${data.trust_data?.scores?.chitty?.toFixed(1) || 'N/A'}
-
-6D Trust Breakdown:
-- Source: ${data.trust_data?.dimensions?.source?.toFixed(1) || 'N/A'}
-- Temporal: ${data.trust_data?.dimensions?.temporal?.toFixed(1) || 'N/A'}
-- Channel: ${data.trust_data?.dimensions?.channel?.toFixed(1) || 'N/A'}
-- Outcome: ${data.trust_data?.dimensions?.outcome?.toFixed(1) || 'N/A'}
-- Network: ${data.trust_data?.dimensions?.network?.toFixed(1) || 'N/A'}
-- Justice: ${data.trust_data?.dimensions?.justice?.toFixed(1) || 'N/A'}
-
-✅ Integrity Verified: ${data.integrity_verified}
-🔗 View at: ${data.evidence_url}
-
-<em>Evidence permanently recorded with blockchain anchoring and cryptographic verification</em>
-                    `;
-                } else {
-                    output.innerHTML = `Error: ${data.error}`;
-                }
-            } catch (error) {
-                output.innerHTML = `Error: ${error.message}`;
-            }
-        }
-        
-        async function generateComplianceReport() {
-            const orgId = document.getElementById('org-id').value;
-            const output = document.getElementById('report-output');
-            
-            output.innerHTML = 'Generating enterprise compliance report...';
-            
-            try {
-                const response = await fetch('/api/enterprise/compliance-report', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        organization_id: orgId
-                    })
-                });
-                const data = await response.json();
-                
-                if (response.ok) {
-                    output.innerHTML = `
-<strong>Compliance Report Generated:</strong>
+<strong>Integration Snippets Created:</strong>
 
 Notion Page ID: ${data.notion_page_id}
-Organization: ${orgId}
+Description: ${data.description}
+Evidence Ledger: ${data.evidence_url}
 
-Compliance Metrics:
-- Total Users: ${data.metrics.total_users}
-- Average Trust Score: ${data.metrics.average_trust_score.toFixed(1)}
-- High Trust Users: ${data.metrics.high_trust_users}
-- Compliance Status: ${data.metrics.compliance_status}
-- Verification Coverage: ${data.metrics.verification_coverage}
+Generated Code Snippets:
+✅ Trust Passport Generation
+✅ Evidence Ledger Recording
+✅ 6D Trust Calculation
+✅ Enterprise Compliance Integration
+✅ Flask API Endpoints
+✅ Quick Start Guide
 
-<em>Full compliance documentation available in Notion workspace</em>
+<em>Ready-to-use code snippets now available for other teams to integrate ChittyTrust functionality</em>
+
+<a href="${data.evidence_url}" target="_blank" style="color: #00ff88;">View Integration Snippets →</a>
                     `;
                 } else {
                     output.innerHTML = `Error: ${data.error}`;

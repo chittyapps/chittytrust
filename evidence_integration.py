@@ -115,6 +115,33 @@ class EvidenceLedgerIntegration:
             logging.error(f"Compliance audit creation failed: {e}")
             return None
     
+    def create_integration_snippets_page(self) -> Optional[str]:
+        """Create integration snippets page for team collaboration"""
+        try:
+            from integration_snippets import generate_integration_snippets_for_notion
+            
+            snippets = generate_integration_snippets_for_notion()
+            
+            snippets_page = {
+                'parent': {'type': 'page_id', 'page_id': self.evidence_ledger_id},
+                'properties': {
+                    'title': {'title': [{'text': {'content': f'ChittyTrust Integration Snippets - {datetime.utcnow().strftime("%Y-%m-%d")}'}}]}
+                },
+                'children': self._build_integration_snippets_blocks(snippets)
+            }
+            
+            response = self._make_notion_request('POST', '/pages', snippets_page)
+            
+            if response and response.get('id'):
+                logging.info(f"Integration snippets page created: {response['id']}")
+                return response['id']
+            
+            return None
+            
+        except Exception as e:
+            logging.error(f"Integration snippets page creation failed: {e}")
+            return None
+    
     def _build_evidence_blocks(self, user_id: str, trust_data: Dict, blockchain_tx: str = None) -> List[Dict]:
         """Build evidence documentation blocks"""
         blocks = [
@@ -129,7 +156,7 @@ class EvidenceLedgerIntegration:
                 'paragraph': {
                     'rich_text': [
                         {'text': {'content': f'User ID: '}},
-                        {'text': {'content': user_id, 'annotations': {'bold': True, 'color': 'blue'}}}
+                        {'text': {'content': user_id, 'annotations': {'bold': True}}}
                     ]
                 }
             },
@@ -424,6 +451,205 @@ class EvidenceLedgerIntegration:
         import hashlib
         combined_data = f"{user_id}{json.dumps(trust_data, sort_keys=True)}{datetime.utcnow().date().isoformat()}"
         return hashlib.sha256(combined_data.encode()).hexdigest()[:16]
+    
+    def _build_integration_snippets_blocks(self, snippets: Dict) -> List[Dict]:
+        """Build integration snippets documentation blocks"""
+        blocks = [
+            {
+                'object': 'block',
+                'type': 'heading_1',
+                'heading_1': {'rich_text': [{'text': {'content': 'ChittyTrust Integration Snippets'}}]}
+            },
+            {
+                'object': 'block',
+                'type': 'paragraph',
+                'paragraph': {
+                    'rich_text': [
+                        {'text': {'content': 'Ready-to-use code snippets for integrating ChittyTrust blockchain verification and evidence ledger functionality into your applications.'}}
+                    ]
+                }
+            },
+            {
+                'object': 'block',
+                'type': 'heading_2',
+                'heading_2': {'rich_text': [{'text': {'content': '🔐 Trust Passport Generation'}}]}
+            },
+            {
+                'object': 'block',
+                'type': 'paragraph',
+                'paragraph': {
+                    'rich_text': [{'text': {'content': 'Generate blockchain-verified trust passports for cross-platform verification:'}}]
+                }
+            },
+            {
+                'object': 'block',
+                'type': 'code',
+                'code': {
+                    'rich_text': [{'text': {'content': snippets['trust_passport']}}],
+                    'language': 'python'
+                }
+            },
+            {
+                'object': 'block',
+                'type': 'heading_2',
+                'heading_2': {'rich_text': [{'text': {'content': '📋 Evidence Ledger Recording'}}]}
+            },
+            {
+                'object': 'block',
+                'type': 'paragraph',
+                'paragraph': {
+                    'rich_text': [{'text': {'content': 'Record immutable evidence with blockchain anchoring:'}}]
+                }
+            },
+            {
+                'object': 'block',
+                'type': 'code',
+                'code': {
+                    'rich_text': [{'text': {'content': snippets['evidence_ledger']}}],
+                    'language': 'python'
+                }
+            },
+            {
+                'object': 'block',
+                'type': 'heading_2',
+                'heading_2': {'rich_text': [{'text': {'content': '⚖️ 6D Trust Calculation'}}]}
+            },
+            {
+                'object': 'block',
+                'type': 'paragraph',
+                'paragraph': {
+                    'rich_text': [{'text': {'content': 'Calculate comprehensive trust scores using the ChittyTrust engine:'}}]
+                }
+            },
+            {
+                'object': 'block',
+                'type': 'code',
+                'code': {
+                    'rich_text': [{'text': {'content': snippets['trust_calculation']}}],
+                    'language': 'python'
+                }
+            },
+            {
+                'object': 'block',
+                'type': 'heading_2',
+                'heading_2': {'rich_text': [{'text': {'content': '🏢 Enterprise Compliance'}}]}
+            },
+            {
+                'object': 'block',
+                'type': 'paragraph',
+                'paragraph': {
+                    'rich_text': [{'text': {'content': 'Generate automated compliance documentation:'}}]
+                }
+            },
+            {
+                'object': 'block',
+                'type': 'code',
+                'code': {
+                    'rich_text': [{'text': {'content': snippets['compliance_integration']}}],
+                    'language': 'python'
+                }
+            },
+            {
+                'object': 'block',
+                'type': 'heading_2',
+                'heading_2': {'rich_text': [{'text': {'content': '🌐 API Integration'}}]}
+            },
+            {
+                'object': 'block',
+                'type': 'paragraph',
+                'paragraph': {
+                    'rich_text': [{'text': {'content': 'Flask API endpoints for trust verification services:'}}]
+                }
+            },
+            {
+                'object': 'block',
+                'type': 'code',
+                'code': {
+                    'rich_text': [{'text': {'content': snippets['api_integration']}}],
+                    'language': 'python'
+                }
+            },
+            {
+                'object': 'block',
+                'type': 'heading_2',
+                'heading_2': {'rich_text': [{'text': {'content': '🔗 Key Integrations'}}]}
+            },
+            {
+                'object': 'block',
+                'type': 'bulleted_list_item',
+                'bulleted_list_item': {
+                    'rich_text': [
+                        {'text': {'content': 'ChittyChain Database: '}},
+                        {'text': {'content': 'CHITTYCHAIN_DB_URL', 'annotations': {'code': True}}}
+                    ]
+                }
+            },
+            {
+                'object': 'block',
+                'type': 'bulleted_list_item',
+                'bulleted_list_item': {
+                    'rich_text': [
+                        {'text': {'content': 'Notion Integration: '}},
+                        {'text': {'content': 'NOTION_INTEGRATION_SECRET', 'annotations': {'code': True}}}
+                    ]
+                }
+            },
+            {
+                'object': 'block',
+                'type': 'bulleted_list_item',
+                'bulleted_list_item': {
+                    'rich_text': [
+                        {'text': {'content': 'Evidence Ledger ID: '}},
+                        {'text': {'content': '24694de4357980dba689cf778c9708eb', 'annotations': {'code': True}}}
+                    ]
+                }
+            },
+            {
+                'object': 'block',
+                'type': 'heading_2',
+                'heading_2': {'rich_text': [{'text': {'content': '🚀 Quick Start'}}]}
+            },
+            {
+                'object': 'block',
+                'type': 'numbered_list_item',
+                'numbered_list_item': {
+                    'rich_text': [{'text': {'content': 'Set up environment variables for ChittyChain and Notion integration'}}]
+                }
+            },
+            {
+                'object': 'block',
+                'type': 'numbered_list_item',
+                'numbered_list_item': {
+                    'rich_text': [{'text': {'content': 'Import the integration modules in your application'}}]
+                }
+            },
+            {
+                'object': 'block',
+                'type': 'numbered_list_item',
+                'numbered_list_item': {
+                    'rich_text': [{'text': {'content': 'Use the provided snippets to add trust verification to your workflows'}}]
+                }
+            },
+            {
+                'object': 'block',
+                'type': 'numbered_list_item',
+                'numbered_list_item': {
+                    'rich_text': [{'text': {'content': 'Monitor evidence ledger for audit trails and compliance documentation'}}]
+                }
+            },
+            {
+                'object': 'block',
+                'type': 'callout',
+                'callout': {
+                    'rich_text': [
+                        {'text': {'content': '💡 Pro Tip: All trust calculations are automatically recorded on blockchain with cryptographic verification for audit trails.'}}
+                    ],
+                    'icon': {'emoji': '💡'}
+                }
+            }
+        ]
+        
+        return blocks
     
     def _get_trust_level(self, score: float) -> str:
         """Convert trust score to trust level"""

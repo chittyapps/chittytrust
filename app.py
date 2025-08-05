@@ -324,6 +324,83 @@ def record_evidence_ledger(user_id):
         logging.error(f"Evidence ledger recording failed: {e}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/evidence-ledger/integration-snippets', methods=['POST'])
+def create_integration_snippets():
+    """Create integration snippets page in ChittyChain Evidence Ledger"""
+    try:
+        from evidence_integration import evidence_ledger
+        
+        # Create integration snippets page
+        snippets_id = evidence_ledger.create_integration_snippets_page()
+        
+        if snippets_id:
+            return jsonify({
+                'snippets_created': True,
+                'notion_page_id': snippets_id,
+                'evidence_url': 'https://www.notion.so/ChittyChain-Evidence-Ledger-24694de4357980dba689cf778c9708eb',
+                'description': 'Ready-to-use integration snippets for team collaboration'
+            })
+        else:
+            return jsonify({'error': 'Integration snippets creation failed'}), 500
+            
+    except Exception as e:
+        logging.error(f"Integration snippets creation failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+# ChittyChain Integrated Workflow Endpoints
+
+@app.route('/api/chitty-workflow/execute/<user_id>', methods=['POST'])
+def execute_chitty_workflow(user_id):
+    """Execute integrated ChittyTrust + ChittyVerify + ChittyChain workflow"""
+    try:
+        from chitty_workflow import chitty_workflow
+        
+        data = request.get_json() or {}
+        verification_type = data.get('verification_type', 'comprehensive')
+        
+        # Execute complete workflow
+        result = chitty_workflow.execute_trust_verification_workflow(user_id, verification_type)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Chitty workflow execution failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/chitty-workflow/batch-process', methods=['POST'])
+def batch_process_chitty_workflow():
+    """Batch process multiple users through ChittyChain workflow"""
+    try:
+        from chitty_workflow import chitty_workflow
+        
+        data = request.get_json()
+        user_ids = data.get('user_ids', [])
+        
+        if not user_ids:
+            return jsonify({'error': 'No user IDs provided'}), 400
+        
+        results = []
+        for user_id in user_ids:
+            workflow_result = chitty_workflow.execute_trust_verification_workflow(user_id)
+            results.append(workflow_result)
+        
+        # Summary statistics
+        successful = len([r for r in results if r.get('status') == 'completed'])
+        failed = len(results) - successful
+        
+        return jsonify({
+            'batch_processed': True,
+            'total_users': len(user_ids),
+            'successful': successful,
+            'failed': failed,
+            'results': results,
+            'batch_id': f"batch_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
+        })
+        
+    except Exception as e:
+        logging.error(f"Batch workflow processing failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/marketplace/requests', methods=['GET'])
 def get_marketplace_requests():
     """Get available verification requests"""
