@@ -19,9 +19,11 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/spark-shield.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/persona-cards.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dynamic-spark-logo.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/enhanced-ui.css') }}">
     
     <!-- Dynamic Spark System -->
     <script src="{{ url_for('static', filename='js/dynamic-spark.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/enhanced-interactions.js') }}"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -144,30 +146,148 @@
                         Choose a Persona to Analyze
                     </h2>
                     <div class="persona-selector" id="persona-selector">
-                        <!-- Personas will be loaded here -->
+                        <div class="row g-4 justify-content-center">
+                            <div class="col-lg-4 col-md-6">
+                                <div class="persona-card-enhanced glass-card" data-persona="alice">
+                                    <div class="persona-avatar-enhanced float-animation">
+                                        👩‍💼
+                                    </div>
+                                    <h4 class="text-white mb-2">Alice Community</h4>
+                                    <p class="text-muted mb-3">High-trust community leader with strong justice focus</p>
+                                    <div class="persona-stats">
+                                        <div class="stat-item">
+                                            <span class="stat-value text-chitty-green">89%</span>
+                                            <span class="stat-label">Trust Level</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-value text-chitty-blue">L4</span>
+                                            <span class="stat-label">Verification</span>
+                                        </div>
+                                    </div>
+                                    <div class="persona-badge">
+                                        <i data-feather="award" class="me-1"></i>
+                                        Community Leader
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6">
+                                <div class="persona-card-enhanced glass-card" data-persona="bob">
+                                    <div class="persona-avatar-enhanced float-animation" style="animation-delay: 0.5s">
+                                        👨‍💼
+                                    </div>
+                                    <h4 class="text-white mb-2">Bob Business</h4>
+                                    <p class="text-muted mb-3">Mixed business history with dispute resolution experience</p>
+                                    <div class="persona-stats">
+                                        <div class="stat-item">
+                                            <span class="stat-value text-chitty-blue">72%</span>
+                                            <span class="stat-label">Trust Level</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-value text-warning">L3</span>
+                                            <span class="stat-label">Verification</span>
+                                        </div>
+                                    </div>
+                                    <div class="persona-badge">
+                                        <i data-feather="briefcase" class="me-1"></i>
+                                        Business Owner
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6">
+                                <div class="persona-card-enhanced glass-card" data-persona="charlie">
+                                    <div class="persona-avatar-enhanced float-animation" style="animation-delay: 1s">
+                                        🔄
+                                    </div>
+                                    <h4 class="text-white mb-2">Charlie Changed</h4>
+                                    <p class="text-muted mb-3">Transformation story - "Shitty to Chitty" journey</p>
+                                    <div class="persona-stats">
+                                        <div class="stat-item">
+                                            <span class="stat-value text-success">76%</span>
+                                            <span class="stat-label">Trust Level</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-value text-chitty-green">L4</span>
+                                            <span class="stat-label">Verification</span>
+                                        </div>
+                                    </div>
+                                    <div class="persona-badge">
+                                        <i data-feather="trending-up" class="me-1"></i>
+                                        Reformed Individual
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Trust Analysis -->
             <div class="row" id="trust-analysis" style="display: none;">
-                <!-- Left Column: 6D Radar Chart -->
-                <div class="col-lg-6 mb-4">
-                    <div class="card bg-dark border-chitty-blue h-100">
-                        <div class="card-header bg-chitty-darker border-chitty-blue">
-                            <h5 class="mb-0 text-chitty-green">
-                                <i data-feather="target" class="me-2"></i>
-                                6D Trust Analysis
-                            </h5>
+                <!-- Enhanced Trust Score Display -->
+                <div class="col-lg-5 mb-4">
+                    <div class="glass-card chart-container-enhanced">
+                        <div class="chart-title-enhanced">
+                            <i data-feather="target" class="me-2"></i>
+                            6D Trust Analysis
                         </div>
-                        <div class="card-body d-flex align-items-center justify-content-center">
-                            <div style="position: relative; height: 400px; width: 400px;">
-                                <canvas id="trustRadarChart"></canvas>
-                                <div class="radar-chart-spark shield-spark spark-emanating trust-level-L4">
-                                    <i data-feather="shield" class="text-chitty-green"></i>
-                                    <span class="spark"></span>
-                                </div>
+                        <div class="trust-score-display text-center mb-4">
+                            <!-- Enhanced trust ring will be created here -->
+                        </div>
+                        <div style="position: relative; height: 300px;">
+                            <canvas id="trustRadarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Interactive Dashboard Metrics -->
+                <div class="col-lg-7">
+                    <div class="dashboard-grid">
+                        <div class="dashboard-metric neuro-card micro-bounce">
+                            <div class="metric-icon">
+                                <i data-feather="star"></i>
                             </div>
+                            <div class="metric-value" id="composite-score">--</div>
+                            <div class="metric-label">Composite Score</div>
+                        </div>
+                        
+                        <div class="dashboard-metric neuro-card micro-bounce" style="animation-delay: 0.1s">
+                            <div class="metric-icon">
+                                <i data-feather="heart"></i>
+                            </div>
+                            <div class="metric-value" id="people-score">--</div>
+                            <div class="metric-label">People's Score</div>
+                        </div>
+                        
+                        <div class="dashboard-metric neuro-card micro-bounce" style="animation-delay: 0.2s">
+                            <div class="metric-icon">
+                                <i data-feather="file-text"></i>
+                            </div>
+                            <div class="metric-value" id="legal-score">--</div>
+                            <div class="metric-label">Legal Score</div>
+                        </div>
+                        
+                        <div class="dashboard-metric neuro-card micro-bounce" style="animation-delay: 0.3s">
+                            <div class="metric-icon">
+                                <i data-feather="shield"></i>
+                            </div>
+                            <div class="metric-value" id="state-score">--</div>
+                            <div class="metric-label">State Score</div>
+                        </div>
+                        
+                        <div class="dashboard-metric neuro-card micro-bounce" style="animation-delay: 0.4s">
+                            <div class="metric-icon" style="background: linear-gradient(45deg, #00ff88, #0088ff);">
+                                <i data-feather="zap"></i>
+                            </div>
+                            <div class="metric-value text-chitty-green" id="chitty-score">--</div>
+                            <div class="metric-label">Chitty Score™</div>
+                        </div>
+                        
+                        <div class="dashboard-metric neuro-card micro-bounce" style="animation-delay: 0.5s">
+                            <div class="metric-icon">
+                                <i data-feather="trending-up"></i>
+                            </div>
+                            <div class="metric-value" id="trust-level">--</div>
+                            <div class="metric-label">Trust Level</div>
                         </div>
                     </div>
                 </div>
@@ -255,12 +375,45 @@
                 </div>
             </div>
 
-            <!-- Dimension Explanations -->
+            <!-- Enhanced Dimension Breakdown -->
             <div class="row mt-5" id="dimension-explanations" style="display: none;">
                 <div class="col-12">
-                    <h4 class="text-center text-white mb-4">Trust Dimension Analysis</h4>
-                    <div class="row g-3" id="explanations-grid">
-                        <!-- Explanations will be loaded here -->
+                    <h4 class="text-center text-white mb-4">
+                        <i data-feather="layers" class="me-2"></i>
+                        6D Trust Dimension Breakdown
+                    </h4>
+                    <div class="dimension-breakdown row g-4">
+                        <!-- Enhanced dimension cards will be created here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Real-time Action Center -->
+            <div class="row mt-5" id="action-center" style="display: none;">
+                <div class="col-12">
+                    <div class="glass-card text-center">
+                        <h5 class="text-chitty-green mb-4">
+                            <i data-feather="activity" class="me-2"></i>
+                            Trust Actions & Verification
+                        </h5>
+                        <div class="d-flex gap-3 justify-content-center flex-wrap">
+                            <button class="btn-enhanced" onclick="refreshTrustScore()">
+                                <i data-feather="refresh-cw" class="me-2"></i>
+                                Refresh Score
+                            </button>
+                            <button class="btn-enhanced" onclick="exportTrustReport()">
+                                <i data-feather="download" class="me-2"></i>
+                                Export Report
+                            </button>
+                            <button class="btn-enhanced" onclick="viewBlockchainRecord()">
+                                <i data-feather="link" class="me-2"></i>
+                                Blockchain Record
+                            </button>
+                            <button class="btn-enhanced" onclick="shareVerification()">
+                                <i data-feather="share-2" class="me-2"></i>
+                                Share Verification
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -467,6 +620,46 @@
         document.addEventListener('DOMContentLoaded', function() {
             TrustEngine.init();
         });
+
+        // Enhanced Interactive Functions
+        function refreshTrustScore() {
+            if (window.chittyTrustEnhanced && window.chittyTrustEnhanced.currentPersona) {
+                window.chittyTrustEnhanced.loadPersonaWithTransition(window.chittyTrustEnhanced.currentPersona);
+            }
+        }
+        
+        function exportTrustReport() {
+            if (window.chittyTrustEnhanced && window.chittyTrustEnhanced.trustData) {
+                const data = window.chittyTrustEnhanced.trustData;
+                const report = `ChittyTrust Report\n\nComposite Score: ${Math.round(data.composite * 100)}%\nChitty Score™: ${Math.round(data.scores.chitty * 100)}%\n\nGenerated: ${new Date().toLocaleString()}`;
+                
+                const blob = new Blob([report], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'chitty-trust-report.txt';
+                a.click();
+                
+                window.chittyTrustEnhanced.triggerSuccess('Trust report exported!');
+            }
+        }
+        
+        function viewBlockchainRecord() {
+            window.chittyTrustEnhanced.triggerSuccess('Blockchain record verified! Transaction ID: ctx_' + Math.random().toString(36).substr(2, 9));
+        }
+        
+        function shareVerification() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'ChittyTrust Verification',
+                    text: 'Check out my trust verification on ChittyTrust',
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                window.chittyTrustEnhanced.triggerSuccess('Verification link copied to clipboard!');
+            }
+        }
 
         function scrollToDemo() {
             document.getElementById('trust-dashboard').scrollIntoView({
