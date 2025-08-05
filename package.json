@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "@anthropic-ai/claude-code": "^1.0.61"
+    "@anthropic-ai/claude-code": "^1.0.61",
+    "@octokit/rest": "^22.0.0",
+    "github": "^14.0.0"
   }
 }

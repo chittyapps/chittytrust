@@ -107,6 +107,16 @@ def marketplace():
     """ChittyID Verification Marketplace"""
     return render_template('marketplace.html')
 
+@app.route('/partners')
+def partners():
+    """ChittyID Partners & Integration"""
+    return render_template('partners.html')
+
+@app.route('/onboarding')
+def onboarding():
+    """Developer Onboarding Guide"""
+    return render_template('onboarding.html')
+
 @app.route('/api/marketplace/requests', methods=['GET'])
 def get_marketplace_requests():
     """Get available verification requests"""
