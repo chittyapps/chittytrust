@@ -44,7 +44,7 @@ class ChittyChainLedger:
     """Enhanced ChittyChain Ledger with cross-platform integration"""
     
     def __init__(self):
-        self.ledger_url = os.environ.get('CHITTYCHAIN_LEDGER_URL', 'https://chittychain-ledger.replit.app')
+        self.ledger_url = os.environ.get('CHITTYCHAIN_LEDGER_URL', 'https://a619aa1d-896e-402c-9d4d-d35aa6663444-00-2pfapv5lxqfhn.picard.replit.dev')
         self.local_db_url = os.environ.get('CHITTYCHAIN_DB_URL')
         self.api_key = os.environ.get('CHITTYCHAIN_API_KEY')
         self.session = requests.Session()
@@ -54,6 +54,9 @@ class ChittyChainLedger:
             'User-Agent': 'ChittyTrust-Ledger/2.0'
         })
         self.local_cache = {}  # Local cache for performance
+        self.external_ledgers = [
+            'https://a619aa1d-896e-402c-9d4d-d35aa6663444-00-2pfapv5lxqfhn.picard.replit.dev'
+        ]
         
     async def create_ledger_entry(self, user_id: str, event_type: str, trust_scores: Dict, 
                                 event_data: Dict = None, cross_platform_refs: List[str] = None) -> Optional[str]:
@@ -482,10 +485,30 @@ class ChittyChainLedger:
     async def _get_external_ledger_status(self, ledger_url: str) -> Dict:
         """Get status of external ledger"""
         try:
-            response = self.session.get(f"{ledger_url}/api/status", timeout=5)
-            return {'accessible': response.status_code == 200}
-        except Exception:
-            return {'accessible': False}
+            # Try different endpoints for ledger status
+            endpoints = ['/api/status', '/status', '/health', '/']
+            
+            for endpoint in endpoints:
+                try:
+                    response = self.session.get(f"{ledger_url}{endpoint}", timeout=5)
+                    if response.status_code == 200:
+                        content = response.text.lower()
+                        # Check if it's a ChittyChain instance
+                        is_chitty = any(keyword in content for keyword in 
+                                      ['chitty', 'ledger', 'blockchain', 'trust'])
+                        return {
+                            'accessible': True,
+                            'is_chittychain': is_chitty,
+                            'endpoint': endpoint,
+                            'status_code': response.status_code
+                        }
+                except Exception:
+                    continue
+            
+            return {'accessible': False, 'error': 'No valid endpoints found'}
+            
+        except Exception as e:
+            return {'accessible': False, 'error': str(e)}
     
     async def _get_active_users(self) -> List[str]:
         """Get list of active users for sync"""

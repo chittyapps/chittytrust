@@ -359,13 +359,45 @@ def get_ledger_status():
                 'verify_passport': '/api/ledger/passport/verify/<passport_id>',
                 'sync_external': '/api/ledger/sync',
                 'analytics': '/api/ledger/analytics'
-            }
+            },
+            'external_ledgers': [
+                'https://a619aa1d-896e-402c-9d4d-d35aa6663444-00-2pfapv5lxqfhn.picard.replit.dev'
+            ]
         }
         
         return jsonify(status)
         
     except Exception as e:
         logging.error(f"Ledger status check failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/ledger/external/status', methods=['POST'])
+def check_external_ledger_status():
+    """Check status of external ChittyChain Ledger instances"""
+    try:
+        from chittychain_ledger import chittychain_ledger
+        
+        data = request.get_json() or {}
+        ledger_urls = data.get('urls', chittychain_ledger.external_ledgers)
+        
+        results = {}
+        
+        for url in ledger_urls:
+            try:
+                status = asyncio.run(chittychain_ledger._get_external_ledger_status(url))
+                results[url] = status
+            except Exception as e:
+                results[url] = {'accessible': False, 'error': str(e)}
+        
+        return jsonify({
+            'external_ledgers': results,
+            'total_checked': len(ledger_urls),
+            'accessible_count': sum(1 for r in results.values() if r.get('accessible')),
+            'timestamp': datetime.utcnow().isoformat()
+        })
+        
+    except Exception as e:
+        logging.error(f"External ledger status check failed: {e}")
         return jsonify({'error': str(e)}), 500
 
 # Notion Enterprise Integration Endpoints

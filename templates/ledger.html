@@ -144,6 +144,10 @@
                             <i data-feather="link" class="me-2"></i>
                             Sync External
                         </button>
+                        <button class="btn-enhanced" onclick="checkExternalLedgers()">
+                            <i data-feather="globe" class="me-2"></i>
+                            Check Network
+                        </button>
                         <button class="btn-enhanced" onclick="exportLedgerData()">
                             <i data-feather="download" class="me-2"></i>
                             Export Data
@@ -562,11 +566,70 @@
             alert('Passport download initiated for: ' + passportId);
         }
         
-        function syncExternalLedger() {
-            const externalUrl = prompt('Enter external ChittyChain Ledger URL:');
+        async function syncExternalLedger() {
+            const externalUrl = prompt('Enter external ChittyChain Ledger URL:', 'https://a619aa1d-896e-402c-9d4d-d35aa6663444-00-2pfapv5lxqfhn.picard.replit.dev');
             if (externalUrl) {
-                // Implementation for external sync
-                alert('Sync initiated with: ' + externalUrl);
+                try {
+                    const response = await fetch('/api/ledger/sync', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            ledger_url: externalUrl,
+                            user_ids: ['alice', 'bob', 'charlie'] 
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert(`Sync completed successfully!\n\nSynchronized users: ${result.results.synchronized_users}\nNew entries: ${result.results.new_entries}\nConflicts: ${result.results.verification_conflicts}`);
+                    } else {
+                        alert('Sync failed: ' + (result.error || 'Unknown error'));
+                    }
+                    
+                } catch (error) {
+                    console.error('Sync failed:', error);
+                    alert('Sync failed: ' + error.message);
+                }
+            }
+        }
+        
+        async function checkExternalLedgers() {
+            try {
+                const response = await fetch('/api/ledger/external/status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+                
+                const status = await response.json();
+                
+                if (status.error) {
+                    throw new Error(status.error);
+                }
+                
+                let statusMessage = `External Ledger Network Status:\n\n`;
+                statusMessage += `Total Checked: ${status.total_checked}\n`;
+                statusMessage += `Accessible: ${status.accessible_count}\n\n`;
+                
+                for (const [url, result] of Object.entries(status.external_ledgers)) {
+                    const shortUrl = url.substring(0, 50) + (url.length > 50 ? '...' : '');
+                    statusMessage += `${shortUrl}\n`;
+                    statusMessage += `Status: ${result.accessible ? 'ONLINE' : 'OFFLINE'}\n`;
+                    if (result.is_chittychain !== undefined) {
+                        statusMessage += `ChittyChain: ${result.is_chittychain ? 'YES' : 'NO'}\n`;
+                    }
+                    if (result.error) {
+                        statusMessage += `Error: ${result.error}\n`;
+                    }
+                    statusMessage += `\n`;
+                }
+                
+                alert(statusMessage);
+                
+            } catch (error) {
+                console.error('Network check failed:', error);
+                alert('Network check failed: ' + error.message);
             }
         }
         
