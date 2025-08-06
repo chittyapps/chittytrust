@@ -117,6 +117,19 @@ The system is designed to be both a working demonstration of 6D trust scoring an
 
 ## Recent Changes
 
+### ChittyBeacon App Tracking Integration (August 6, 2025)
+- **Complete ChittyBeacon integration**: Added Python implementation of ChittyBeacon app tracking system from GitHub repository
+- **Auto-detection capabilities**: Platform detection (Replit, GitHub, Vercel, etc.), ChittyOS component detection, Claude Code detection
+- **Event tracking**: Startup/shutdown events, periodic heartbeats (5-minute intervals), custom API event tracking
+- **Privacy-focused design**: Only tracks app identity, platform info, and system details - no personal data or secrets
+- **Real-time monitoring**: Integrated with ChittyOS ecosystem status page showing ChittyBeacon as operational component
+- **API endpoints**:
+  - `/api/chitty-beacon` - Status and configuration information
+  - `/api/chitty-beacon/test` - Test custom event tracking
+  - Automatic beacon events on all ChittyOS API access
+- **Configuration support**: Environment variables for endpoint, interval, enable/disable, and verbose mode
+- **Cross-platform support**: Works on Replit, GitHub Actions, Vercel, Netlify, Heroku, AWS, GCP, Azure
+
 ### ChittyChain Integrated Workflow System (August 5, 2025)
 - **Complete workflow integration**: Implemented end-to-end ChittyID → ChittyTrust → ChittyVerify → ChittyChain workflow pipeline
 - **Evidence Ledger as unverified database**: Evidence Ledger serves as unverified/unminted database of evidence before workflow processing

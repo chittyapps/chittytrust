@@ -11,6 +11,17 @@ import jwt
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
+# Initialize ChittyBeacon tracking
+try:
+    from chitty_beacon import initialize_beacon, send_event
+    beacon = initialize_beacon()
+    logging.info("ChittyBeacon initialized successfully")
+except Exception as e:
+    logging.warning(f"ChittyBeacon initialization failed: {e}")
+    # Define no-op functions if beacon fails
+    def send_event(event_type, data=None):
+        pass
+
 # Import our trust engine
 from src.chitty_trust import calculate_trust
 from src.chitty_trust.analytics import TrustAnalytics
@@ -1119,6 +1130,8 @@ def calculate_chitty_score():
 def chittyos_ecosystem_status():
     """Get status of all ChittyOS components including Chitty Score™"""
     try:
+        # Send beacon event for API access
+        send_event('api_access', {'endpoint': '/api/chittyos/status', 'component': 'chittyos'})
         return jsonify({
             'ecosystem': 'ChittyOS',
             'version': '2.0',
@@ -1157,6 +1170,11 @@ def chittyos_ecosystem_status():
                     'status': 'operational',
                     'service': 'Blockchain Immutability',
                     'endpoint': '/api/ledger'
+                },
+                'chitty_beacon': {
+                    'status': 'operational',
+                    'service': 'App Tracking & Monitoring',
+                    'endpoint': '/api/chitty-beacon'
                 }
             },
             'trust_pipeline': [
@@ -1176,6 +1194,78 @@ def chittyos_ecosystem_status():
         
     except Exception as e:
         logging.error(f"ChittyOS status check failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/chitty-beacon', methods=['GET'])
+def chitty_beacon_status():
+    """Get ChittyBeacon tracking status and information"""
+    try:
+        send_event('api_access', {'endpoint': '/api/chitty-beacon', 'component': 'beacon'})
+        
+        return jsonify({
+            'service': 'ChittyBeacon',
+            'status': 'operational',
+            'description': 'Dead simple app tracking for ChittyOS ecosystem',
+            'features': [
+                'Startup/shutdown events',
+                'Periodic heartbeats (every 5 minutes)',
+                'Platform detection (Replit, GitHub, Vercel, etc.)',
+                'Claude Code detection',
+                'Git information tracking',
+                'ChittyOS component detection'
+            ],
+            'platform_support': [
+                'Replit', 'GitHub Actions', 'Vercel', 'Netlify', 
+                'Heroku', 'AWS Lambda', 'Google Cloud', 'Azure'
+            ],
+            'privacy': {
+                'tracks': [
+                    'App identity and version',
+                    'Platform information', 
+                    'Basic system info (Python version, OS)',
+                    'ChittyOS component status'
+                ],
+                'does_not_track': [
+                    'Personal data',
+                    'Environment secrets',
+                    'User content'
+                ]
+            },
+            'configuration': {
+                'endpoint': os.getenv('BEACON_ENDPOINT', 'https://beacon.cloudeto.com'),
+                'interval': f"{int(os.getenv('BEACON_INTERVAL', '300000')) / 1000} seconds",
+                'enabled': os.getenv('BEACON_DISABLED', 'false').lower() != 'true',
+                'verbose': os.getenv('BEACON_VERBOSE', 'false').lower() == 'true'
+            },
+            'timestamp': datetime.utcnow().isoformat()
+        })
+        
+    except Exception as e:
+        logging.error(f"ChittyBeacon status check failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/chitty-beacon/test', methods=['POST'])
+def test_beacon():
+    """Test ChittyBeacon tracking with custom event"""
+    try:
+        data = request.get_json() or {}
+        event_type = data.get('event_type', 'test_event')
+        custom_data = data.get('data', {})
+        
+        send_event(event_type, {
+            'test': True,
+            'source': 'api_test',
+            **custom_data
+        })
+        
+        return jsonify({
+            'success': True,
+            'message': f'Test beacon sent: {event_type}',
+            'data': custom_data
+        })
+        
+    except Exception as e:
+        logging.error(f"Beacon test failed: {e}")
         return jsonify({'error': str(e)}), 500
 
 # ChittyCounsel API Endpoints
