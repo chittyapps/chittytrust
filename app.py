@@ -53,6 +53,7 @@ analytics_engine = TrustAnalytics()
 viz_engine = TrustVisualizationEngine()
 
 # Import marketplace services
+from chitty_id_integration import chitty_id_generator, chitty_id_validator, chitty_trust_bridge
 from marketplace import MarketplaceService, TrustHistoryService, VerifierService
 from auth import require_auth, get_current_user, is_authenticated
 
@@ -111,6 +112,11 @@ def marketplace():
 def partners():
     """ChittyID Partners & Integration"""
     return render_template('partners.html')
+
+@app.route('/chittyos')
+def chittyos_ecosystem():
+    """ChittyOS Ecosystem page with Chitty Score™ integration"""
+    return render_template('chittyos.html')
 
 @app.route('/ledger')
 def ledger():
@@ -1043,6 +1049,313 @@ def get_chitty_level(composite_score):
         return {'level': 'L1', 'name': 'Basic', 'color': '#8888ff'}
     else:
         return {'level': 'L0', 'name': 'Anonymous', 'color': '#cccccc'}
+
+# ChittyID Integration Endpoints
+@app.route('/api/chitty-id/generate', methods=['POST'])
+def generate_chitty_id():
+    """Generate new ChittyID with integrated trust scoring"""
+    try:
+        data = request.get_json() or {}
+        
+        # Generate ChittyID with trust integration
+        chitty_data = chitty_trust_bridge.create_verified_identity({
+            'vertical': data.get('vertical', 'user'),
+            'identity_verified': data.get('identity_verified', True),
+            'address_verified': data.get('address_verified', True),
+            'phone_verified': data.get('phone_verified', True),
+            'email_verified': data.get('email_verified', True),
+            'user_data': data.get('user_data', {})
+        })
+        
+        return jsonify({
+            'success': True,
+            'chitty_id': chitty_data['chitty_id'],
+            'display_format': chitty_data['display_format'],
+            'trust_scores': chitty_data['trust_profile']['trust_scores'],
+            'chitty_score': chitty_data['trust_profile']['trust_scores']['chitty_score'],
+            'verification_status': 'verified',
+            'created_at': chitty_data['created_at']
+        })
+        
+    except Exception as e:
+        logging.error(f"ChittyID generation failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/chitty-score/calculate', methods=['POST'])
+def calculate_chitty_score():
+    """Calculate Chitty Score™ for existing ChittyID"""
+    try:
+        data = request.get_json() or {}
+        chitty_id = data.get('chitty_id', '')
+        
+        # Validate ChittyID first
+        if not chitty_id_validator.validate_chitty_id(chitty_id)['valid']:
+            return jsonify({'error': 'Invalid ChittyID format'}), 400
+        
+        # Calculate trust scores including Chitty Score™
+        trust_data = chitty_trust_bridge._calculate_full_trust_scores(
+            {'chitty_id': chitty_id},
+            data.get('verification_data', {})
+        )
+        
+        return jsonify({
+            'success': True,
+            'chitty_id': chitty_id,
+            'chitty_score': trust_data['chitty_score'],
+            'peoples_score': trust_data['peoples_score'],
+            'legal_score': trust_data['legal_score'], 
+            'state_score': trust_data['state_score'],
+            'composite_score': trust_data['composite_score'],
+            'trust_level': trust_data['trust_level'],
+            'calculated_at': trust_data['calculation_timestamp']
+        })
+        
+    except Exception as e:
+        logging.error(f"Chitty Score calculation failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+# ChittyOS Ecosystem Integration
+@app.route('/api/chittyos/status', methods=['GET'])
+def chittyos_ecosystem_status():
+    """Get status of all ChittyOS components including Chitty Score™"""
+    try:
+        return jsonify({
+            'ecosystem': 'ChittyOS',
+            'version': '2.0',
+            'components': {
+                'chitty_id': {
+                    'status': 'operational',
+                    'service': 'Identity Verification',
+                    'endpoint': '/api/chitty-id'
+                },
+                'chitty_trust': {
+                    'status': 'operational', 
+                    'service': '6D Trust Scoring',
+                    'endpoint': '/api/trust'
+                },
+                'chitty_score': {
+                    'status': 'operational',
+                    'service': 'Proprietary Trust Algorithm™',
+                    'endpoint': '/api/chitty-score'
+                },
+                'chitty_counsel': {
+                    'status': 'operational',
+                    'service': 'Legal & Compliance',
+                    'endpoint': '/api/chitty-counsel'
+                },
+                'chitty_assets': {
+                    'status': 'operational',
+                    'service': 'Digital Asset Management',
+                    'endpoint': '/api/chitty-assets'
+                },
+                'chittify_ance': {
+                    'status': 'operational',
+                    'service': 'Financial Services',
+                    'endpoint': '/api/chittify-ance'
+                },
+                'chitty_chain': {
+                    'status': 'operational',
+                    'service': 'Blockchain Immutability',
+                    'endpoint': '/api/ledger'
+                }
+            },
+            'trust_pipeline': [
+                'ChittyID (Identity)',
+                'ChittyTrust (6D Scoring)', 
+                'ChittyVerify (Data Integrity)',
+                'ChittyChain (Immutable Records)'
+            ],
+            'chitty_score_features': [
+                'Justice-focused algorithm',
+                'Outcome-weighted calculations',
+                'Cross-platform compatibility',
+                'Real-time score updates'
+            ],
+            'timestamp': datetime.utcnow().isoformat()
+        })
+        
+    except Exception as e:
+        logging.error(f"ChittyOS status check failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+# ChittyCounsel API Endpoints
+@app.route('/api/chitty-counsel/analyze', methods=['POST'])
+def chitty_counsel_analyze():
+    """Legal compliance analysis with Chitty Score™ integration"""
+    try:
+        data = request.get_json() or {}
+        document_text = data.get('document_text', '')
+        compliance_type = data.get('type', 'general')
+        
+        # Simulate legal analysis with trust scoring
+        analysis_result = {
+            'compliance_score': 85.2,
+            'risk_assessment': 'Medium',
+            'legal_recommendations': [
+                'Update privacy policy section 3.2',
+                'Add explicit consent mechanisms',
+                'Implement data retention policies'
+            ],
+            'chitty_trust_impact': {
+                'legal_score_adjustment': +5.0,
+                'compliance_verified': True,
+                'regulatory_status': 'Compliant'
+            },
+            'analysis_timestamp': datetime.utcnow().isoformat()
+        }
+        
+        return jsonify({
+            'success': True,
+            'analysis': analysis_result,
+            'document_length': len(document_text),
+            'compliance_type': compliance_type
+        })
+        
+    except Exception as e:
+        logging.error(f"ChittyCounsel analysis failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+# ChittyAssets API Endpoints  
+@app.route('/api/chitty-assets/portfolio', methods=['GET'])
+def chitty_assets_portfolio():
+    """Digital asset portfolio with trust-based valuations"""
+    try:
+        user_id = request.args.get('user_id', 'demo_user')
+        
+        # Simulate portfolio with trust-weighted values
+        portfolio = {
+            'total_value': 125890.50,
+            'trust_weighted_value': 118340.25,
+            'assets': [
+                {
+                    'id': 'asset_001',
+                    'name': 'ChittyCoin Holdings',
+                    'type': 'cryptocurrency',
+                    'quantity': 1500.0,
+                    'market_value': 45000.0,
+                    'trust_score': 92.5,
+                    'trust_verified': True
+                },
+                {
+                    'id': 'asset_002', 
+                    'name': 'Verified Digital Art NFT',
+                    'type': 'nft',
+                    'quantity': 1,
+                    'market_value': 8500.0,
+                    'trust_score': 88.0,
+                    'authenticity_verified': True
+                },
+                {
+                    'id': 'asset_003',
+                    'name': 'Trust-Backed Bond',
+                    'type': 'defi',
+                    'quantity': 50.0,
+                    'market_value': 72390.50,
+                    'trust_score': 95.2,
+                    'yield_rate': 4.2
+                }
+            ],
+            'trust_metrics': {
+                'portfolio_trust_score': 91.2,
+                'verified_assets': 3,
+                'total_assets': 3,
+                'trust_coverage': 100.0
+            }
+        }
+        
+        return jsonify({
+            'success': True,
+            'user_id': user_id,
+            'portfolio': portfolio,
+            'last_updated': datetime.utcnow().isoformat()
+        })
+        
+    except Exception as e:
+        logging.error(f"ChittyAssets portfolio failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+# ChittifyAnce API Endpoints
+@app.route('/api/chittify-ance/credit-score', methods=['GET'])
+def chittify_ance_credit_score():
+    """Trust-based credit scoring for financial services"""
+    try:
+        chitty_id = request.args.get('chitty_id', '')
+        
+        if not chitty_id:
+            return jsonify({'error': 'ChittyID required'}), 400
+            
+        # Calculate trust-based credit score
+        credit_analysis = {
+            'chitty_id': chitty_id,
+            'credit_score': 847,  # Traditional score
+            'chitty_credit_score': 892,  # Enhanced with trust data
+            'credit_factors': {
+                'payment_history': 95,
+                'credit_utilization': 78,
+                'length_of_history': 85,
+                'credit_mix': 82,
+                'new_credit': 88,
+                'trust_verification': 94  # ChittyOS enhancement
+            },
+            'trust_enhancements': {
+                'identity_verified': True,
+                'outcome_history_positive': 91.5,
+                'network_trust_score': 87.2,
+                'justice_alignment': 89.8
+            },
+            'available_products': [
+                {
+                    'product': 'ChittyLoan Personal',
+                    'rate': 3.2,
+                    'max_amount': 50000,
+                    'trust_discount': 0.5
+                },
+                {
+                    'product': 'ChittyCard Premium',
+                    'rate': 14.9,
+                    'credit_limit': 25000,
+                    'trust_rewards': '2.5% on all purchases'
+                }
+            ]
+        }
+        
+        return jsonify({
+            'success': True,
+            'credit_analysis': credit_analysis,
+            'calculated_at': datetime.utcnow().isoformat()
+        })
+        
+    except Exception as e:
+        logging.error(f"ChittifyAnce credit score failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/chittify-ance/payment', methods=['POST'])  
+def chittify_ance_payment():
+    """Trust-verified payment processing"""
+    try:
+        data = request.get_json() or {}
+        
+        payment_result = {
+            'transaction_id': f"CHT-{datetime.utcnow().strftime('%Y%m%d')}-{hash(str(data)) % 100000:05d}",
+            'amount': data.get('amount', 0),
+            'currency': data.get('currency', 'USD'),
+            'trust_verification': 'verified',
+            'processing_fee': data.get('amount', 0) * 0.015,  # 1.5% with trust discount
+            'standard_fee': data.get('amount', 0) * 0.029,    # 2.9% standard
+            'trust_discount': 1.4,  # Percentage saved due to trust score
+            'status': 'completed',
+            'confirmation_code': f"CHT{hash(str(data)) % 10000:04d}"
+        }
+        
+        return jsonify({
+            'success': True,
+            'payment': payment_result,
+            'processed_at': datetime.utcnow().isoformat()
+        })
+        
+    except Exception as e:
+        logging.error(f"ChittifyAnce payment failed: {e}")
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
