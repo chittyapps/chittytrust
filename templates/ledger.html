@@ -13,7 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/chitty.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/enhanced-ui.css') }}">
     
     <style>
@@ -85,6 +85,66 @@
             background: rgba(26, 26, 46, 0.6);
             border-radius: 15px;
             padding: 1.5rem;
+        }
+        
+        /* Fix dashboard grid layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-metric {
+            background: linear-gradient(145deg, #1e1e3f, #16213e);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(0, 136, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-metric:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 136, 255, 0.2);
+        }
+        
+        .metric-icon {
+            color: #00ff88;
+            margin-bottom: 1rem;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+        
+        /* Enhanced button styles */
+        .btn-enhanced {
+            background: linear-gradient(45deg, #0088ff, #00ff88);
+            border: none;
+            color: #000;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-enhanced:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 136, 255, 0.3);
+            color: #000;
         }
     </style>
 </head>
@@ -390,15 +450,11 @@
                 loadLedgerAnalytics();
                 
                 // Show success notification
-                if (window.chittyTrustEnhanced) {
-                    window.chittyTrustEnhanced.triggerSuccess('Ledger status refreshed');
-                }
+                console.log('Ledger status refreshed successfully');
                 
             } catch (error) {
                 console.error('Status refresh failed:', error);
-                if (window.chittyTrustEnhanced) {
-                    window.chittyTrustEnhanced.showErrorState(error);
-                }
+                alert('Status refresh failed: ' + error.message);
             }
         }
         
@@ -645,11 +701,95 @@
         
         function updateLedgerStatus(status) {
             document.getElementById('total-entries').textContent = '15,420';
+            console.log('Updated ledger status:', status);
+        }
+        
+        function loadRecentEntries() {
+            // Load recent entries with demo data for now
+            const entriesContainer = document.getElementById('recent-entries');
+            if (!entriesContainer) return;
+            
+            // Add more demo entries for better display
+            const demoEntries = [
+                {
+                    id: 'cle_a1b2c3d4e5f6g7h8',
+                    user: 'Alice Community',
+                    event_type: 'trust_update',
+                    level: 'L4',
+                    level_name: 'PLATINUM',
+                    score: 89.2,
+                    timestamp: '2025-08-06 06:45',
+                    blockchain_tx: 'ctx_89a7b6c5d4e3f2g1'
+                },
+                {
+                    id: 'cle_b2c3d4e5f6g7h8i9',
+                    user: 'Bob Business',
+                    event_type: 'verification_completed',
+                    level: 'L3',
+                    level_name: 'GOLD',
+                    score: 82.7,
+                    timestamp: '2025-08-06 06:30',
+                    blockchain_tx: 'ctx_78b9c6d5e4f3g2h1'
+                },
+                {
+                    id: 'cle_c3d4e5f6g7h8i9j0',
+                    user: 'Charlie Changed',
+                    event_type: 'passport_created',
+                    level: 'L2',
+                    level_name: 'SILVER',
+                    score: 75.3,
+                    timestamp: '2025-08-06 06:15',
+                    blockchain_tx: 'ctx_67a8b5c4d3e2f1g0'
+                }
+            ];
+            
+            const entriesHtml = demoEntries.map(entry => `
+                <div class="ledger-entry-card">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h5 class="text-white mb-1">${entry.event_type.replace('_', ' ').toUpperCase()} - ${entry.user}</h5>
+                            <small class="text-muted">Entry ID: ${entry.id}</small>
+                        </div>
+                        <div class="blockchain-badge">
+                            <i data-feather="shield"></i>
+                            Verified
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <small class="text-muted">Event Type</small>
+                            <div class="text-white">${entry.event_type}</div>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted">Trust Level</small>
+                            <div class="verification-level level-${entry.level}">${entry.level} ${entry.level_name}</div>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted">Composite Score</small>
+                            <div class="text-chitty-green h5">${entry.score}%</div>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted">Timestamp</small>
+                            <div class="text-white">${entry.timestamp}</div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Blockchain TX: ${entry.blockchain_tx}</small>
+                        <button class="btn btn-sm btn-outline-success" onclick="viewEntry('${entry.id}')">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            entriesContainer.innerHTML = entriesHtml;
+            feather.replace();
         }
         
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             refreshLedgerStatus();
+            loadRecentEntries();
         });
     </script>
 </body>
