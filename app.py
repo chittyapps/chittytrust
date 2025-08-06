@@ -1148,10 +1148,10 @@ def chittyos_ecosystem_status():
                     'service': 'Digital Asset Management',
                     'endpoint': '/api/chitty-assets'
                 },
-                'chittify_ance': {
+                'chitty_finance': {
                     'status': 'operational',
                     'service': 'Financial Services',
-                    'endpoint': '/api/chittify-ance'
+                    'endpoint': '/api/chitty-finance'
                 },
                 'chitty_chain': {
                     'status': 'operational',
@@ -1274,9 +1274,9 @@ def chitty_assets_portfolio():
         logging.error(f"ChittyAssets portfolio failed: {e}")
         return jsonify({'error': str(e)}), 500
 
-# ChittifyAnce API Endpoints
-@app.route('/api/chittify-ance/credit-score', methods=['GET'])
-def chittify_ance_credit_score():
+# ChittyFinance API Endpoints
+@app.route('/api/chitty-finance/credit-score', methods=['GET'])
+def chitty_finance_credit_score():
     """Trust-based credit scoring for financial services"""
     try:
         chitty_id = request.args.get('chitty_id', '')
@@ -1326,11 +1326,11 @@ def chittify_ance_credit_score():
         })
         
     except Exception as e:
-        logging.error(f"ChittifyAnce credit score failed: {e}")
+        logging.error(f"ChittyFinance credit score failed: {e}")
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/chittify-ance/payment', methods=['POST'])  
-def chittify_ance_payment():
+@app.route('/api/chitty-finance/payment', methods=['POST'])  
+def chitty_finance_payment():
     """Trust-verified payment processing"""
     try:
         data = request.get_json() or {}
@@ -1354,7 +1354,7 @@ def chittify_ance_payment():
         })
         
     except Exception as e:
-        logging.error(f"ChittifyAnce payment failed: {e}")
+        logging.error(f"ChittyFinance payment failed: {e}")
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
