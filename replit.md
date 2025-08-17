@@ -122,7 +122,7 @@ The system is designed to be both a working demonstration of 6D trust scoring an
 - **Auto-detection capabilities**: Platform detection (Replit, GitHub, Vercel, etc.), ChittyOS component detection, Claude Code detection
 - **Event tracking**: Startup/shutdown events, periodic heartbeats (5-minute intervals), custom API event tracking
 - **Privacy-focused design**: Only tracks app identity, platform info, and system details - no personal data or secrets
-- **Real-time monitoring**: Integrated with ChittyOS ecosystem status page showing ChittyBeacon as operational component
+- **Local monitoring**: Integrated with ChittyOS ecosystem status page showing ChittyBeacon as operational component with local logging (no external data transmission)
 - **API endpoints**:
   - `/api/chitty-beacon` - Status and configuration information
   - `/api/chitty-beacon/test` - Test custom event tracking

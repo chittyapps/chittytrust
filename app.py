@@ -1232,10 +1232,11 @@ def chitty_beacon_status():
                 ]
             },
             'configuration': {
-                'endpoint': os.getenv('BEACON_ENDPOINT', 'https://beacon.cloudeto.com'),
+                'endpoint': os.getenv('BEACON_ENDPOINT', 'Local logging only (no external endpoint)'),
                 'interval': f"{int(os.getenv('BEACON_INTERVAL', '300000')) / 1000} seconds",
-                'enabled': os.getenv('BEACON_DISABLED', 'false').lower() != 'true',
-                'verbose': os.getenv('BEACON_VERBOSE', 'false').lower() == 'true'
+                'enabled': os.getenv('BEACON_DISABLED', 'false').lower() != 'true' and os.getenv('BEACON_ENDPOINT') is not None,
+                'verbose': os.getenv('BEACON_VERBOSE', 'true').lower() == 'true',
+                'mode': 'local_logging' if not os.getenv('BEACON_ENDPOINT') else 'external_endpoint'
             },
             'timestamp': datetime.utcnow().isoformat()
         })
