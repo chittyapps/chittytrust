@@ -21,10 +21,10 @@ import logging
 class ChittyBeacon:
     def __init__(self):
         self.config = {
-            'endpoint': os.getenv('BEACON_ENDPOINT', None),  # No default external endpoint
+            'endpoint': os.getenv('BEACON_ENDPOINT', 'https://beacon.chitty.cc'),
             'interval': int(os.getenv('BEACON_INTERVAL', '300000')) / 1000,  # Convert to seconds
-            'enabled': os.getenv('BEACON_DISABLED', 'false').lower() != 'true' and os.getenv('BEACON_ENDPOINT') is not None,
-            'verbose': os.getenv('BEACON_VERBOSE', 'true').lower() == 'true'  # Enable verbose by default for internal use
+            'enabled': os.getenv('BEACON_DISABLED', 'true').lower() != 'true',  # Disabled by default until domain is set up
+            'verbose': os.getenv('BEACON_VERBOSE', 'true').lower() == 'true'
         }
         
         self.app_info = None
@@ -220,16 +220,10 @@ class ChittyBeacon:
         return components
     
     def _send_beacon(self, data: Dict[str, Any]):
-        """Send beacon data to tracking endpoint or log locally"""
+        """Send beacon data to tracking endpoint"""
         if not self.config['enabled']:
             if self.config['verbose']:
                 self._log(f"Beacon disabled - would track: {data.get('event', 'unknown')} for {data.get('name', 'unknown')}")
-            return
-        
-        if not self.config['endpoint']:
-            # Log locally instead of sending to external endpoint
-            if self.config['verbose']:
-                self._log(f"Beacon event: {data.get('event')} - {data.get('name')} - {data.get('timestamp', '')}")
             return
         
         try:

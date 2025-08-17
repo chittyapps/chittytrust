@@ -1232,11 +1232,11 @@ def chitty_beacon_status():
                 ]
             },
             'configuration': {
-                'endpoint': os.getenv('BEACON_ENDPOINT', 'Local logging only (no external endpoint)'),
+                'endpoint': os.getenv('BEACON_ENDPOINT', 'https://beacon.chitty.cc'),
                 'interval': f"{int(os.getenv('BEACON_INTERVAL', '300000')) / 1000} seconds",
-                'enabled': os.getenv('BEACON_DISABLED', 'false').lower() != 'true' and os.getenv('BEACON_ENDPOINT') is not None,
+                'enabled': os.getenv('BEACON_DISABLED', 'true').lower() != 'true',
                 'verbose': os.getenv('BEACON_VERBOSE', 'true').lower() == 'true',
-                'mode': 'local_logging' if not os.getenv('BEACON_ENDPOINT') else 'external_endpoint'
+                'mode': 'chittyos_tracking'
             },
             'timestamp': datetime.utcnow().isoformat()
         })
