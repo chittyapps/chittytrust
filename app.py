@@ -30,6 +30,14 @@ except Exception as e:
     logging.warning(f"ChittyVerify initialization failed: {e}")
     chitty_verify = None
 
+# Initialize ChittySOP Compiler
+try:
+    from chitty_sop_compiler import chitty_sop_compiler
+    logging.info("ChittySOP Compiler initialized successfully")
+except Exception as e:
+    logging.warning(f"ChittySOP Compiler initialization failed: {e}")
+    chitty_sop_compiler = None
+
 # Import our trust engine
 from src.chitty_trust import calculate_trust
 from src.chitty_trust.analytics import TrustAnalytics
@@ -1161,7 +1169,7 @@ def chittyos_ecosystem_status():
                 },
                 'chitty_counsel': {
                     'status': 'operational',
-                    'service': 'Legal & Compliance',
+                    'service': 'Legal & Compliance + SOP Automation',
                     'endpoint': '/api/chitty-counsel'
                 },
                 'chitty_assets': {
@@ -1542,6 +1550,218 @@ def chitty_finance_payment():
         
     except Exception as e:
         logging.error(f"ChittyFinance payment failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+# ChittySOP Compiler and Foundation API Endpoints
+@app.route('/api/chitty-counsel/sop/compile', methods=['POST'])
+def compile_sop():
+    """Compile YAML SOP into executable plan"""
+    try:
+        data = request.get_json()
+        yaml_text = data.get('yaml_text', '')
+        exec_request_data = data.get('execution_request', {})
+        
+        if not chitty_sop_compiler:
+            return jsonify({'error': 'ChittySOP Compiler not available'}), 503
+        
+        # Create execution request
+        from chitty_sop_compiler import ExecutionRequest
+        exec_request = ExecutionRequest(
+            sop_id=exec_request_data.get('sop_id', 'unknown'),
+            target=exec_request_data.get('target', {}),
+            role=exec_request_data.get('role', 'user'),
+            requester=exec_request_data.get('requester', 'anonymous'),
+            constraints=exec_request_data.get('constraints', {}),
+            variables=exec_request_data.get('variables', {})
+        )
+        
+        # Compile SOP
+        import asyncio
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        plan, diagnostics, success = loop.run_until_complete(
+            chitty_sop_compiler.compile_sop_from_yaml(yaml_text, exec_request)
+        )
+        
+        result = {
+            'success': success,
+            'diagnostics': {
+                'missing_variables': diagnostics.missing_variables,
+                'missing_scopes': diagnostics.missing_scopes,
+                'missing_tools': diagnostics.missing_tools,
+                'role_violations': diagnostics.role_violations,
+                'cycle_errors': diagnostics.cycle_errors,
+                'budget_warnings': diagnostics.budget_warnings,
+                'validation_warnings': diagnostics.validation_warnings
+            }
+        }
+        
+        if plan:
+            result['plan'] = {
+                'plan_id': plan.plan_id,
+                'sop_id': plan.sop_id,
+                'sop_version': plan.sop_version,
+                'target': plan.target,
+                'step_count': len(plan.steps),
+                'execution_order': plan.execution_order,
+                'execution_groups': plan.execution_groups,
+                'total_estimated_duration': plan.total_estimated_duration,
+                'budget_estimate': plan.budget_estimate,
+                'created_at': plan.created_at,
+                'status': plan.status
+            }
+        
+        send_event('sop_compilation', {
+            'sop_id': exec_request.sop_id,
+            'success': success,
+            'step_count': len(plan.steps) if plan else 0
+        })
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"SOP compilation failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/chitty-counsel/foundation', methods=['GET'])
+def chitty_foundation_info():
+    """Get ChittyFoundation charter and governance information"""
+    try:
+        send_event('api_access', {'endpoint': '/api/chitty-counsel/foundation', 'component': 'foundation'})
+        
+        return jsonify({
+            'foundation': 'ChittyFoundation',
+            'version': '0.1.0',
+            'purpose': 'Protect human dignity, ownership, and fairness in People × AI systems',
+            'core_principles': [
+                'You Own Your Data & DNA',
+                'Portability by Default', 
+                'Attribution → Compensation',
+                'Privacy with Proof',
+                'Human Safety & Dignity',
+                'Transparency over Theater',
+                'Diversity as Resilience'
+            ],
+            'governance_model': {
+                'board_of_stewards': '7-11 members (Contributors, Partners, Independent)',
+                'councils': [
+                    'Ethics & Safety',
+                    'Data Ownership & Portability',
+                    'Attribution & Compensation',
+                    'Compliance, Audit & Risk',
+                    'Security & IP',
+                    'Dispute Resolution'
+                ]
+            },
+            'certification_tiers': ['Bronze', 'Silver', 'Gold'],
+            'scope': [
+                'ChittyTrust', 'ChittyVerify', 'ChittyChain', 'ChittyDNA', 
+                'ChittyScore', 'ChittyPay', 'All Chitty-Certified tools'
+            ],
+            'licensing': {
+                'cdcl': 'ChittyDNA Contributor License - perpetual ownership by contributor',
+                'revocation': 'Notice windows + rate-limited migration',
+                'attribution_models': ['Impact-weighted', 'Time-weighted', 'Role-tiered', 'Hybrid']
+            },
+            'timestamp': datetime.utcnow().isoformat()
+        })
+        
+    except Exception as e:
+        logging.error(f"Foundation info check failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/chitty-counsel/world-order', methods=['GET'])
+def chitty_world_order_strategy():
+    """Get Chitty World Order activation strategy"""
+    try:
+        send_event('api_access', {'endpoint': '/api/chitty-counsel/world-order', 'component': 'strategy'})
+        
+        return jsonify({
+            'strategy': 'Chitty World Order Activation',
+            'phases': {
+                'phase_1': {
+                    'name': 'The Trojan Horse',
+                    'timeline': 'Months 1-6',
+                    'approach': 'Just Helpful Apps',
+                    'launch_order': ['ChittyPark', 'ChittyTax', 'ChittyRent', 'ChittySave'],
+                    'user_perception': 'Wow, helpful apps!',
+                    'reality': 'Complete financial profile + identity'
+                },
+                'phase_2': {
+                    'name': 'The Network Effect',
+                    'timeline': 'Months 6-12',
+                    'approach': 'Everything Works Better Together',
+                    'key_benefit': 'Cross-app integration creates FOMO',
+                    'experience_progression': {
+                        'one_app': 'Helpful',
+                        'two_apps': 'Convenient', 
+                        'three_apps': 'Life-changing',
+                        'all_apps': 'Cannot live without'
+                    }
+                },
+                'phase_3': {
+                    'name': 'The Business Invasion',
+                    'timeline': 'Year 2',
+                    'approach': 'B2B Critical Mass',
+                    'targets': {
+                        'landlords': 'ChittyProperty saves 10hrs/week',
+                        'lawyers': 'ChittyCounsel wins more cases',
+                        'accountants': 'ChittyBooks automates everything',
+                        'small_shops': 'ChittyCommerce beats Square'
+                    },
+                    'killer_feature': 'Your tenants/clients already use Chitty',
+                    'result': 'Businesses MUST adopt or lose customers'
+                },
+                'phase_4': {
+                    'name': 'The Trust Revolution',
+                    'timeline': 'Year 3',
+                    'approach': 'ChittyScore Becomes Currency',
+                    'required_for': {
+                        'renting_apartment': 'Landlords prefer ChittyScore to credit',
+                        'getting_loan': 'Better rates with high ChittyScore',
+                        'finding_job': 'Employers check ChittyScore',
+                        'dating': 'ChittyScore on dating profiles'
+                    },
+                    'result': 'Not having ChittyScore = Digital outcast'
+                },
+                'phase_5': {
+                    'name': 'The Institution Flip',
+                    'timeline': 'Year 4-5',
+                    'approach': 'Resistance Becomes Adoption',
+                    'institutional_capture': {
+                        'courts': 'ChittyChain evidence more reliable than paper',
+                        'banks': 'Mercury + ChittyFinance integration',
+                        'government': 'DMV uses ChittyID, IRS accepts ChittyTax'
+                    }
+                }
+            },
+            'endgame_timeline': {
+                'year_1': '1M users (Cute apps)',
+                'year_2': '10M users (Growing ecosystem)', 
+                'year_3': '50M users (ChittyScore matters)',
+                'year_4': '100M users (Cannot avoid it)',
+                'year_5': '500M users (Default system)',
+                'year_10': 'What was life like before ChittyOS?'
+            },
+            'secret_weapons': [
+                'Open Source Core - Cannot be killed',
+                'User-Owned Data - Cannot be stolen',
+                'Transparent Algorithms - Cannot be corrupted',
+                'Blockchain Evidence - Cannot be faked',
+                'Network Effects - Cannot be stopped'
+            ],
+            'kill_shots': {
+                'traditional_credit': 'ChittyScore includes rent payments, real behavior',
+                'predatory_finance': 'No hidden fees - smart contracts enforce fairness',
+                'legal_gatekeeping': 'Justice should not cost $500/hour - AI lawyer 24/7'
+            },
+            'war_cry': 'We are not competing with apps. We are replacing the system. One user at a time. Until there is no going back.',
+            'philosophy': 'The Chitty World Order is not imposed - it is CHOSEN because it is actually better.',
+            'timestamp': datetime.utcnow().isoformat()
+        })
+        
+    except Exception as e:
+        logging.error(f"World order strategy check failed: {e}")
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':

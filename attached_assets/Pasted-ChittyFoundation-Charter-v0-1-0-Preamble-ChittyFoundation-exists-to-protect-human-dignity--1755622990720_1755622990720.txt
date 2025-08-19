@@ -1,0 +1,86 @@
+ChittyFoundation — Charter (v0.1)
+0) Preamble
+￼
+￼
+ChittyFoundation exists to protect human dignity, ownership, and fairness in People × AI systems. It stewards the rules that make Chitty‑ecosystem products safe, portable, equitable, and auditable.
+1) Purpose & Mandate
+* Steward the standards for data/DNA ownership, attribution, compensation, safety, and transparency across the ecosystem.
+* Certify products and organizations that comply (“ChittyCertified”).
+* Enforce rights (e.g., anti‑piracy of AI DNA, ethical exit, portability).
+* Govern upgrades to shared protocols (identity, attribution, audit) and resolve disputes.
+2) Scope
+* Applies to: ChittyTrust, ChittyVerify, ChittyChain, ChittyDNA, ChittyScore, ChittyPay, and any Chitty‑Certified tool or partner.
+* Covers humans and AI agents that operate within these systems.
+* Respects applicable law across jurisdictions; when in conflict, Foundation seeks the most protective position for contributors.
+3) Core Principles (Non‑negotiables)
+1. You Own Your Data & DNA – Individuals own their decision patterns and contributions; orgs obtain licenses, not ownership.
+2. Portability by Default – Export, revoke, and migrate are baseline rights (with reasonable, transparent rate‑limits to prevent abuse).
+3. Attribution → Compensation – Traceable contributions must map to value; value must map to loyalty‑based compensation.
+4. Privacy with Proof – Content can remain private while proofs and audit trails remain verifiable.
+5. Human Safety & Dignity – No systems for coercion, surveillance abuse, or harm; prioritize well‑being and informed consent.
+6. Transparency over Theater – Decisions, metrics, and economic flows are explainable and auditable.
+7. Diversity as Resilience – Avoid monocultures; promote varied human and model “DNA” to reduce brittleness and extraction.
+4) Governance Model
+4.1 Bodies
+* Board of Stewards (BoS) – 7–11 members, mixed seats for: Contributors (3–5), Partners/Orgs (2–3), Independent/Public Interest (2–3).
+* Councils (standing):
+    * Ethics & Safety
+    * Data Ownership & Portability (PDX Spec)
+    * Attribution & Compensation (A/C)
+    * Compliance, Audit & Risk
+    * Security & IP (Piracy Protection Unit)
+    * Dispute Resolution/Ombuds
+* Advisory Forums: open assemblies for shareowners and users; non‑binding but published minutes.
+4.2 Proposals & Voting
+* Categories: Standard (protocol clarifications), Material (policy or economics), Constitutional (core principles).
+* Thresholds (dual‑majority):
+    * Standard: simple majority of BoS.
+    * Material: majority of BoS and majority of Contributor reps.
+    * Constitutional: ⅔ of BoS and ⅔ of Contributor reps; 30‑day public comment.
+* Emergency procedure: Ethics & Safety + Audit may impose 30‑day safeguards; BoS review within 7 days.
+4.3 Conflicts & Transparency
+* Mandatory conflict disclosures; recusals recorded.
+* Public transparency reports on changes, incidents, certifications, and enforcement actions.
+5) Policies & Standards
+5.1 Data Ownership & Licensing
+* ChittyDNA Contributor License (CDCL): perpetual ownership by contributor; org receives scoped, revocable license.
+* Revocation/Exit: notice windows + rate‑limited migration to protect platform stability; all terms published per integration.
+* Personal AI DNA Vaults: encrypted, portable, contributor‑controlled.
+5.2 Attribution & Compensation
+* Trace Chain: Contribution → Deployment → Usage → Impact → Payment (recorded on ChittyChain).
+* Attribution Models: Impact‑weighted, time‑weighted, role‑tiered, or hybrid—selected at project start from Foundation‑approved templates.
+* Decay & Evolution: legacy DNA receives declining share as new work dominates; floor and buyout options when components become infrastructure/commons.
+* Human Factors: peer‑recognized enablement (mentorship, retention, conflict resolution) earns calibrated multipliers.
+5.3 Safety, Privacy, & Audit
+* Privacy with Proof: content‑minimal audit (hashes, ZK proofs when applicable).
+* Right‑Sized Retention: ephemeral messaging with durable proofs.
+* Independent audits for certified participants; incident response timelines and disclosure rules.
+5.4 Anti‑Piracy & Clean IP
+* PirateProtect: continuous similarity detection; notice‑and‑verify; enforce or remediate.
+* Clean‑Room Certification for partners (no cross‑contamination of proprietary DNA).
+5.5 Ethical Exit & Values Trigger
+* Values Charter includes: fair compensation, human dignity, environmental responsibility, anti‑exploitation (e.g., no weaponization/surveillance abuses).
+* If violated, Exit Rights activate: staged migration (e.g., 30/60/90‑day gates), with forensics snapshots for all parties; supermajority can mandate spin‑off.
+5.6 Succession & Caretakers
+* DNA and loyalty flows are estate assets.
+* Optional AI Caretaker Program: vetted maintainers keep avatars current post‑retirement/death with predefined shares.
+5.7 Liability & Redress
+* Traceable decision chains assign responsibility; insurance and caps per certified tier.
+* Ombuds + binding arbitration options; public post‑mortems (sensitive content redacted) for systemic learning.
+6) Certification (ChittyCertified)
+* Tiers (Bronze/Silver/Gold) based on compliance depth (PDX portability, audit quality, clean IP, attribution solidity, fair‑pay metrics).
+* Public registry of certifications and any suspensions.
+7) Reporting & Metrics
+* Annual Fairness Report: pay ratios, loyalty distributions, portability stats, piracy incidents, exit requests/outcomes.
+* North‑Stars: Portability success rate, % of transactions with complete attribution, time‑to‑attribution, contributor satisfaction, safety incidents (zero target).
+8) Amendments
+* Constitutional amendments require supermajorities and public comment; emergency changes sunset unless ratified.
+9) Definitions (extract)
+* DNA: durable representation of a person’s decision patterns, contributions, and model deltas.
+* Loyalty: ongoing compensation tied to active use/impact of licensed DNA.
+* PDX: Portable DNA eXchange specification for export/import and proofs.
+￼
+
+￼
+
+

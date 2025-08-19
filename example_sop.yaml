@@ -1,0 +1,52 @@
+id: sop-eviction-001
+name: Simple Eviction Process
+version: 1.0.0
+description: Automated legal workflow for tenant eviction proceedings
+
+steps:
+  - id: verify_identity
+    action: Verify tenant and landlord identity
+    tool: chitty_verify
+    parameters:
+      tenant_id: "${target.tenant_id}"
+      landlord_id: "${target.landlord_id}"
+      verification_level: "standard"
+    timeout: 300
+    required_role: counsel
+    validation_rules:
+      - "@verified(identity)"
+    retry_policy:
+      max_attempts: 3
+      backoff: exponential
+
+  - id: check_lease_terms
+    action: Analyze lease agreement
+    tool: document.notarize
+    parameters:
+      document_id: "${target.lease_id}"
+      analysis_type: "compliance_check"
+    depends_on: [verify_identity]
+    timeout: 600
+    validation_rules:
+      - "@hash_recorded(document)"
+    
+  - id: calculate_trust_score
+    action: Calculate tenant trust score
+    tool: trust.calculate
+    parameters:
+      user_id: "${target.tenant_id}"
+      context: "rental_history"
+    depends_on: [verify_identity]
+    timeout: 120
+    
+  - id: generate_notice
+    action: Generate eviction notice
+    tool: evidence.add
+    parameters:
+      case_id: "${target.case_id}"
+      document_type: "eviction_notice"
+      tenant_score: "${calculate_trust_score.result.score}"
+    depends_on: [check_lease_terms, calculate_trust_score]
+    timeout: 180
+    validation_rules:
+      - "@verified(legal_compliance)"

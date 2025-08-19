@@ -1,0 +1,126 @@
+Sanity check: what you’ve already nailed
+* Validated YAML → SOP → ExecutionPlan w/ dependencies, timeouts, retries.
+* Diagnostics for missing vars/scopes/tools + budget breakdown.
+* Example SOP (eviction) looks clean and orchestration-friendly.
+Wire it into the rest of the canon (quick)
+1) Persist plans (Worker)
+Add a tiny endpoint so the Orchestrator can store compiled plans + emit a verification event.
+// POST /v1/plans
+// body: { plan: ExecutionPlan }
+router.post('/v1/plans', async (req, env: Env) => {
+  const claims = await verifyJWT(env, req.headers.get('Authorization') || undefined);
+  const { plan } = await req.json();
+  if (!plan?.plan_id) return json({ ok:false, error:'plan.plan_id required' }, 400);
+
+  return withConn(env.NEON_DATABASE_URL, async (sql) => {
+    const chittyId = plan.plan_id; // ok if you minted it; else fallback here
+    await sql`
+      INSERT INTO execution_plan (chitty_id, sop_id, sop_version, target, plan, status)
+      VALUES (${chittyId}, ${plan.sop_id}, ${plan.sop_version}, ${sql.json(plan.target)}, ${sql.json(plan)}, 'Queued')
+      ON CONFLICT (chitty_id) DO UPDATE
+      SET plan=${sql.json(plan)}, status='Queued'
+    `;
+    await sql`INSERT INTO verification_event (chitty_id, event_type, actor)
+              VALUES (${chittyId}, 'Created', ${claims.sub})`;
+    return json({ ok:true, chitty_id });
+  });
+});
+Add the table if you haven’t yet:
+CREATE TABLE IF NOT EXISTS execution_plan (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  chitty_id TEXT UNIQUE NOT NULL,
+  sop_id TEXT NOT NULL,
+  sop_version TEXT NOT NULL,
+  target JSONB NOT NULL,
+  plan JSONB NOT NULL,
+  status TEXT NOT NULL DEFAULT 'Queued', -- Queued|Running|Succeeded|Failed|Canceled
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+2) Mint plan IDs via ChittyID
+Give your compiler a hook so you can pass in a ChittyID:
+// when you call compile
+const mintPlanId = async () => {
+  const r = await fetch(`${CHITTYID_BASE}/identity/chitty-id`, {
+    method:'POST',
+    headers:{Authorization:CHITTYID_BEARER,'content-type':'application/json'},
+    body: JSON.stringify({ kind:'plan', hint:{ sop_id, version }})
+  });
+  const j = await r.json();
+  return j.chitty_id;
+};
+
+const planId = await mintPlanId(); // e.g., plan_ab12cd34
+const { plan, diagnostics } = await compileSOPFromYAML(
+  yamlText,
+  execReq,
+  registryData,
+  planId
+);
+3) Orchestrator handoff (one function)
+After compiling:
+1. POST { plan } to /v1/plans (above).
+2. Start execution loop using plan.execution_order, honoring dependencies and your retry_policy.
+3. After each step, run validation_rules. If fail → retry, else mark step complete.
+4. On finish, verify.log a Verified event on the plan ChittyID and mark execution_plan.status='Succeeded'.
+4) CLI harness for compile+persist (DX boost)
+Make a tiny CLI so you can do:
+sopc compile example-sops/simple-eviction.yaml \
+  --case case_ARIAS_v_BIANCHI \
+  --role counsel \
+  --requester nick \
+  --persist
+That CLI should:
+* Load canon-registry-seed.json (or GET /v1/registry/tools/endpoints)
+* Create ExecutionRequest
+* Call your EnhancedSOPCompiler.compileSOPFromYAML
+* If --persist, POST to /v1/plans
+5) Tests to add (fast wins)
+* Cycles: ensure your detectCycles error blocks compile.
+* Role gate: step required_role=counsel with request.role=ops → error.
+* Pinned tool: evidence.add@1.0.0 resolves.
+* Var interpolation: ${target.case_id} missing → diagnostics.missing_variables includes target.case_id.
+* Scopes: unmet scopes produce diagnostics warning.
+* Budget: high-duration step raises estimate.
+Two small enhancements (non-blocking)
+* Parallel groups: since you have parallel, emit execution_groups: string[][] so runner can fan-out/fan-in without guessing.
+* Acceptance DSL: you already use @verified(...) and @hash_recorded(...). Reserve the @ prefix in schema so LLMs can emit machine-checkable rules on purpose (and you can route them to specific validators).
+Example: compile + persist (end-to-end)
+import { compileSOPFromYAML } from './enhanced-compiler';
+import fs from 'node:fs/promises';
+
+// 1) load seed (or GET from registry endpoints)
+const registryData = JSON.parse(await fs.readFile('examples/canon-registry-seed.json','utf8'));
+
+// 2) load YAML
+const yamlText = await fs.readFile('example-sops/simple-eviction.yaml','utf8');
+
+// 3) exec request
+const execReq = {
+  sop_id: 'sop-lit-eviction-001',
+  target: { case_id: 'case_ARIAS_v_BIANCHI' },
+  role: 'counsel',
+  requester: 'nick',
+  constraints: { deadline: new Date(Date.now() + 2*60*60*1000).toISOString(), priority: 'high' },
+  variables: {}
+};
+
+// 4) mint plan id (ChittyID service)
+const planId = await mintPlanId();
+
+// 5) compile
+const { plan, diagnostics, success } = await compileSOPFromYAML(yamlText, execReq, registryData, planId);
+if (!success) { console.error(diagnostics); process.exit(1); }
+
+// 6) persist
+await fetch(`${WORKER_BASE}/v1/plans`, {
+  method:'POST',
+  headers:{Authorization:`Bearer ${WORKER_BEARER}`,'content-type':'application/json'},
+  body: JSON.stringify({ plan })
+});
+console.log('Plan persisted:', plan.plan_id);
+
+If you want, I’ll:
+* drop the /v1/plans route + execution_plan table into your Worker bundle,
+* add a Vitest suite covering the tests above,
+* and ship a tiny sopc CLI so you can compile/persist with one command.
+Say “ship it” and tell me which repo path in ChittyCorp to target.
