@@ -154,7 +154,7 @@ The system is designed to be both a working demonstration of 6D trust scoring an
   - `/api/chitty-workflow/batch-process` - Batch user processing
   - `/api/evidence-ledger/integration-snippets` - Team collaboration docs
 
-The system provides production-ready trust verification workflow where Evidence Ledger serves as the unverified database, ChittyID provides entry verification, and ChittyChain delivers final blockchain immutability.
+The system provides production-ready trust verification workflow where Evidence Ledger serves as the unverified database, ChittyID provides entry verification, ChittyVerify handles KYC and data integrity, and ChittyChain delivers final blockchain immutability.
 
 ### ChittyID Verification Marketplace Implementation (July 31, 2025)
 - **Complete marketplace system**: Implemented full verification request marketplace with PostgreSQL database

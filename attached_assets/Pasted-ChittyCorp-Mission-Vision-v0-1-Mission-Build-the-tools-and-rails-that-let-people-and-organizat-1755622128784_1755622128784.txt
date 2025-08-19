@@ -1,0 +1,46 @@
+ChittyCorp — Mission & Vision (v0.1)
+Mission
+Build the tools and rails that let people and organizations create, prove, and get paid for their real impact—safely, transparently, and on their own terms.
+We turn human expertise into durable, portable AI capability without extraction, and we make value creation auditable end‑to‑end.
+Vision
+A world where every contribution has DNA, every dollar of value can be traced to its source, and People × AI teamscompound their strengths instead of replacing one another. Ownership is honored, portability is normal, and fairness is the competitive advantage.
+What We Build (Product Pillars)
+1. ChittyTrust — trust & permissions fabric for People × AI orgs.
+2. ChittyVerify — identity and contribution verification.
+3. ChittyChain — immutable proofs and audit trails (privacy‑preserving).
+4. ChittyDNA — attribution graph + PDX portability.
+5. ChittyPay — loyalty distribution tied to usage and impact.
+6. ChittyScore — reputation from outcomes, not output.
+7. Executive Agents — native agents (@cloud… suite) for background execution with natural interrupts.
+Differentiating Principles
+* Ownership by Design: explicit licenses, no silent training.
+* Outcome > Output: business value and user impact trump vanity metrics.
+* Privacy with Proof: ephemeral where possible, provable where necessary.
+* Interoperable & Portable: open PDX spec; no lock‑in.
+* Transparent Execution: “show the work”—commits, tests, deploy receipts.
+* Human‑First: model progress extends people; it doesn’t erase them.
+Strategic Pillars
+* Trust Infrastructure: be the neutral rails for attribution, audit, and payout.
+* Agent Orchestration: background, self‑healing operations with clear human escalation.
+* Ecosystem & Standards: publish PDX, A/C templates, and audit playbooks; certify partners.
+* Safety & Compliance: enterprise‑grade controls; third‑party audits; clean‑IP guarantees.
+* Developer Experience: great SDKs, simple hooks, zero‑to‑value fast.
+Who We Serve
+* Builders & Creators who want to own their AI “selves” and get paid on impact.
+* Organizations that need fair, auditable, low‑friction People × AI operations.
+* Markets where provenance, trust, and speed matter (legal, finance, ops, support, property, media).
+Operating Tenets
+* No Corporate Theater: if it didn’t ship or save time/money/risk, it doesn’t count.
+* No Dark Patterns: consent must be real; exits must work.
+* Public Scorecards: publish outcome metrics and fairness stats.
+* Reasonable Ratios: internal comp aligned to impact; leadership premiums capped by policy.
+* Dogfood First: we run ChittyCorp on ChittyCorp.
+North‑Star Metrics
+* % of active workloads with full attribution
+* Time‑to‑attribution and time‑to‑payout
+* Portability success rate (PDX)
+* Value/Impact index (usage × outcomes ÷ cost)
+* Contributor NPS & retention, creator earnings growth
+* Safety incidents (target: zero material incidents)
+Brand Promise
+“Prove it. Pay it. Port it.” Prove who did what, pay them fairly, and let them take their value with them.

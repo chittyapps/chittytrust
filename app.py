@@ -22,6 +22,14 @@ except Exception as e:
     def send_event(event_type, data=None):
         pass
 
+# Initialize ChittyVerify
+try:
+    from chitty_verify import chitty_verify
+    logging.info("ChittyVerify initialized successfully")
+except Exception as e:
+    logging.warning(f"ChittyVerify initialization failed: {e}")
+    chitty_verify = None
+
 # Import our trust engine
 from src.chitty_trust import calculate_trust
 from src.chitty_trust.analytics import TrustAnalytics
@@ -1166,6 +1174,11 @@ def chittyos_ecosystem_status():
                     'service': 'Financial Services',
                     'endpoint': '/api/chitty-finance'
                 },
+                'chitty_verify': {
+                    'status': 'operational',
+                    'service': 'Identity & Data Verification',
+                    'endpoint': '/api/chitty-verify'
+                },
                 'chitty_chain': {
                     'status': 'operational',
                     'service': 'Blockchain Immutability',
@@ -1178,10 +1191,10 @@ def chittyos_ecosystem_status():
                 }
             },
             'trust_pipeline': [
-                'ChittyID (Identity)',
-                'ChittyTrust (6D Scoring)', 
-                'ChittyVerify (Data Integrity)',
-                'ChittyChain (Immutable Records)'
+                'ChittyID (Identity Verification)',
+                'ChittyTrust (6D Trust Scoring)', 
+                'ChittyVerify (Data Integrity & KYC)',
+                'ChittyChain (Immutable Evidence)'
             ],
             'chitty_score_features': [
                 'Justice-focused algorithm',
@@ -1194,6 +1207,89 @@ def chittyos_ecosystem_status():
         
     except Exception as e:
         logging.error(f"ChittyOS status check failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+# ChittyVerify API Endpoints
+@app.route('/api/chitty-verify', methods=['GET'])
+def chitty_verify_status():
+    """Get ChittyVerify status and capabilities"""
+    try:
+        send_event('api_access', {'endpoint': '/api/chitty-verify', 'component': 'verify'})
+        
+        return jsonify({
+            'service': 'ChittyVerify',
+            'status': 'operational',
+            'description': 'Identity and data verification for ChittyOS ecosystem',
+            'features': [
+                'Identity KYC verification',
+                'Document notarization',
+                'Biometric verification',
+                'Data integrity checks',
+                'Trust level validation'
+            ],
+            'verification_levels': ['minimal', 'standard', 'full'],
+            'supported_verifications': ['identity', 'document', 'biometric', 'data'],
+            'timestamp': datetime.utcnow().isoformat()
+        })
+        
+    except Exception as e:
+        logging.error(f"ChittyVerify status check failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/chitty-verify/identity', methods=['POST'])
+def verify_identity():
+    """Verify user identity through KYC process"""
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id', 'anonymous')
+        identity_data = data.get('identity_data', {})
+        
+        if not chitty_verify:
+            return jsonify({'error': 'ChittyVerify not available'}), 503
+            
+        result = chitty_verify.verify_identity(user_id, identity_data)
+        send_event('identity_verification', {'user_id': user_id, 'status': result.get('status')})
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Identity verification failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/chitty-verify/document', methods=['POST'])
+def verify_document():
+    """Verify and notarize documents"""
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id', 'anonymous')
+        document_data = data.get('document_data', {})
+        
+        if not chitty_verify:
+            return jsonify({'error': 'ChittyVerify not available'}), 503
+            
+        result = chitty_verify.verify_document(user_id, document_data)
+        send_event('document_verification', {'user_id': user_id, 'status': result.get('status')})
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Document verification failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/chitty-verify/trust-level/<user_id>', methods=['GET'])
+def get_user_trust_level(user_id):
+    """Get comprehensive trust level for a user"""
+    try:
+        if not chitty_verify:
+            return jsonify({'error': 'ChittyVerify not available'}), 503
+            
+        result = chitty_verify.get_user_trust_level(user_id)
+        send_event('trust_level_check', {'user_id': user_id})
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Trust level check failed: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/chitty-beacon', methods=['GET'])
