@@ -57,7 +57,7 @@ The application follows a modular architecture with clear separation between the
    - People's Score: Community impact emphasis
    - Legal Score: Technical compliance emphasis
    - State Score: Authority approval emphasis
-   - Chitty Score™: Justice + outcomes focus
+   - Chitty Score™: Reputation & rating system with justice + outcomes focus
 6. **Visualization**: Results displayed via radar charts and detailed breakdowns
 
 ## External Dependencies

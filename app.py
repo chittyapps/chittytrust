@@ -1148,7 +1148,7 @@ def chittyos_ecosystem_status():
                 },
                 'chitty_score': {
                     'status': 'operational',
-                    'service': 'Proprietary Trust Algorithm™',
+                    'service': 'Reputation & Rating System™',
                     'endpoint': '/api/chitty-score'
                 },
                 'chitty_counsel': {
