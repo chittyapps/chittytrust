@@ -7,12 +7,16 @@ class TrustEngine {
     constructor() {
         this.currentPersona = null;
         this.radarChart = null;
+        this.timelineChart = null;
         this.personas = [];
+        this.trustData = null;
+        this.timelineData = null;
     }
 
     static init() {
         const engine = new TrustEngine();
         engine.loadPersonas();
+        window.chittyTrustEnhanced = engine; // Global access for enhanced features
         return engine;
     }
 

@@ -1,4 +1,109 @@
 /**
+ * Enhanced ChittyID Marketplace
+ * Advanced filtering, search, and real-time updates
+ */
+
+class EnhancedMarketplace {
+    constructor() {
+        this.requests = [];
+        this.filteredRequests = [];
+        this.currentFilters = {
+            type: 'all',
+            status: 'all', 
+            priority: 'all',
+            search: ''
+        };
+        this.sortBy = 'newest';
+        this.viewMode = 'grid';
+    }
+
+    // Initialize marketplace
+    async initialize() {
+        await this.loadRequests();
+        this.setupFilters();
+        this.setupSearch();
+        this.renderMarketplace();
+    }
+
+    // Load verification requests
+    async loadRequests() {
+        try {
+            const response = await fetch('/api/marketplace/requests');
+            this.requests = await response.json();
+            this.filteredRequests = [...this.requests];
+        } catch (error) {
+            console.error('Failed to load requests:', error);
+        }
+    }
+
+    // Setup filter controls
+    setupFilters() {
+        const typeFilter = document.getElementById('type-filter');
+        if (typeFilter) {
+            typeFilter.addEventListener('change', (e) => {
+                this.currentFilters.type = e.target.value;
+                this.applyFilters();
+            });
+        }
+    }
+
+    // Setup search functionality  
+    setupSearch() {
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                this.currentFilters.search = e.target.value.toLowerCase();
+                this.applyFilters();
+            });
+        }
+    }
+
+    // Apply filters
+    applyFilters() {
+        this.filteredRequests = this.requests.filter(request => {
+            if (this.currentFilters.type !== 'all' && request.verification_type !== this.currentFilters.type) {
+                return false;
+            }
+            if (this.currentFilters.search) {
+                const searchText = `${request.title} ${request.description}`.toLowerCase();
+                return searchText.includes(this.currentFilters.search);
+            }
+            return true;
+        });
+        this.renderMarketplace();
+    }
+
+    // Render marketplace
+    renderMarketplace() {
+        const container = document.getElementById('requests-container');
+        if (!container) return;
+
+        container.innerHTML = this.filteredRequests.map(request => `
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="marketplace-card h-100">
+                    <div class="card-body">
+                        <h5 class="text-white">${request.title}</h5>
+                        <p class="text-muted">${request.description.substring(0, 100)}...</p>
+                        <div class="d-flex justify-content-between">
+                            <span class="badge bg-primary">${request.verification_type}</span>
+                            <span class="text-chitty-green">${request.reward_amount} CC</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        feather.replace();
+    }
+}
+
+// Initialize marketplace
+document.addEventListener('DOMContentLoaded', function() {
+    window.marketplace = new EnhancedMarketplace();
+    marketplace.initialize();
+});
+
+/**
  * ChittyID Verification Marketplace JavaScript
  * Handles marketplace interactions, trust history visualization, and user authentication
  */

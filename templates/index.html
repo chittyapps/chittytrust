@@ -229,9 +229,30 @@
                         <div class="chart-title-enhanced">
                             <i data-feather="target" class="me-2"></i>
                             6D Trust Analysis
+                            <div class="trust-confidence-badge" id="confidence-badge">
+                                <span class="badge bg-success">High Confidence</span>
+                            </div>
                         </div>
                         <div class="trust-score-display text-center mb-4">
-                            <!-- Enhanced trust ring will be created here -->
+                            <!-- Enhanced trust ring with animated progress -->
+                            <div class="trust-ring-container">
+                                <svg class="trust-ring" width="200" height="200" viewBox="0 0 200 200">
+                                    <circle cx="100" cy="100" r="80" stroke="#1a1a1a" stroke-width="12" fill="none"/>
+                                    <circle cx="100" cy="100" r="80" stroke="url(#trustGradient)" stroke-width="12" fill="none" 
+                                            stroke-linecap="round" stroke-dasharray="502" stroke-dashoffset="502" 
+                                            class="trust-progress-circle" id="trust-progress-circle"/>
+                                    <defs>
+                                        <linearGradient id="trustGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="#00ff88"/>
+                                            <stop offset="100%" stop-color="#0088ff"/>
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <div class="trust-ring-content">
+                                    <div class="trust-ring-score" id="trust-ring-score">--</div>
+                                    <div class="trust-ring-label">Trust Score</div>
+                                </div>
+                            </div>
                         </div>
                         <div style="position: relative; height: 300px;">
                             <canvas id="trustRadarChart"></canvas>
@@ -242,20 +263,28 @@
                 <!-- Interactive Dashboard Metrics -->
                 <div class="col-lg-7">
                     <div class="dashboard-grid">
-                        <div class="dashboard-metric neuro-card micro-bounce">
-                            <div class="metric-icon">
+                        <div class="dashboard-metric neuro-card micro-bounce hover-glow">
+                            <div class="metric-icon pulse-glow">
                                 <i data-feather="star"></i>
                             </div>
                             <div class="metric-value" id="composite-score">--</div>
                             <div class="metric-label">Composite Score</div>
+                            <div class="metric-trend" id="composite-trend">
+                                <i data-feather="trending-up" class="text-success"></i>
+                                <span>+2.3%</span>
+                            </div>
                         </div>
                         
-                        <div class="dashboard-metric neuro-card micro-bounce" style="animation-delay: 0.1s">
-                            <div class="metric-icon">
+                        <div class="dashboard-metric neuro-card micro-bounce hover-glow" style="animation-delay: 0.1s">
+                            <div class="metric-icon pulse-glow">
                                 <i data-feather="heart"></i>
                             </div>
                             <div class="metric-value" id="people-score">--</div>
                             <div class="metric-label">People's Score</div>
+                            <div class="metric-trend" id="people-trend">
+                                <i data-feather="trending-up" class="text-success"></i>
+                                <span>+1.8%</span>
+                            </div>
                         </div>
                         
                         <div class="dashboard-metric neuro-card micro-bounce" style="animation-delay: 0.2s">
@@ -274,12 +303,17 @@
                             <div class="metric-label">State Score</div>
                         </div>
                         
-                        <div class="dashboard-metric neuro-card micro-bounce" style="animation-delay: 0.4s">
-                            <div class="metric-icon" style="background: linear-gradient(45deg, #00ff88, #0088ff);">
+                        <div class="dashboard-metric neuro-card micro-bounce hover-glow featured-metric" style="animation-delay: 0.4s">
+                            <div class="metric-icon pulse-glow" style="background: linear-gradient(45deg, #00ff88, #0088ff);">
                                 <i data-feather="zap"></i>
                             </div>
                             <div class="metric-value text-chitty-green" id="chitty-score">--</div>
                             <div class="metric-label">Chitty Score™</div>
+                            <div class="metric-trend" id="chitty-trend">
+                                <i data-feather="trending-up" class="text-success"></i>
+                                <span>+5.2%</span>
+                            </div>
+                            <div class="featured-badge">FEATURED</div>
                         </div>
                         
                         <div class="dashboard-metric neuro-card micro-bounce" style="animation-delay: 0.5s">
@@ -384,6 +418,67 @@
                     </h4>
                     <div class="dimension-breakdown row g-4">
                         <!-- Enhanced dimension cards will be created here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Trust Timeline & Historical Analysis -->
+            <div class="row mt-5" id="trust-timeline" style="display: none;">
+                <div class="col-12">
+                    <div class="glass-card">
+                        <h5 class="text-chitty-green mb-4">
+                            <i data-feather="clock" class="me-2"></i>
+                            Trust Evolution Timeline
+                        </h5>
+                        <div class="timeline-container">
+                            <div class="timeline-controls mb-4">
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-outline-chitty-blue btn-sm active" data-period="all">All Time</button>
+                                    <button class="btn btn-outline-chitty-blue btn-sm" data-period="year">1 Year</button>
+                                    <button class="btn btn-outline-chitty-blue btn-sm" data-period="month">30 Days</button>
+                                    <button class="btn btn-outline-chitty-blue btn-sm" data-period="week">7 Days</button>
+                                </div>
+                                <div class="timeline-stats">
+                                    <span class="badge bg-success me-2">
+                                        <i data-feather="trending-up" style="width: 14px; height: 14px;"></i>
+                                        Overall Trend: Positive
+                                    </span>
+                                    <span class="badge bg-info">
+                                        <i data-feather="activity" style="width: 14px; height: 14px;"></i>
+                                        <span id="timeline-events">--</span> Events
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="timeline-chart-wrapper">
+                                <canvas id="trustTimelineChart" width="800" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Trust Insights & Recommendations -->
+            <div class="row mt-5" id="trust-insights" style="display: none;">
+                <div class="col-lg-6">
+                    <div class="glass-card">
+                        <h5 class="text-chitty-green mb-4">
+                            <i data-feather="lightbulb" class="me-2"></i>
+                            Trust Insights
+                        </h5>
+                        <div id="insights-container">
+                            <!-- AI-generated insights will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="glass-card">
+                        <h5 class="text-chitty-blue mb-4">
+                            <i data-feather="target" class="me-2"></i>
+                            Improvement Recommendations
+                        </h5>
+                        <div id="recommendations-container">
+                            <!-- AI-generated recommendations will be loaded here -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -612,6 +707,7 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/trust-engine.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/enhanced-features.js') }}"></script>
     <script>
         // Initialize Feather Icons
         feather.replace();
