@@ -1,0 +1,9 @@
+[
+  {
+    "origins": ["*"],
+    "methods": ["GET", "POST", "PUT", "DELETE", "HEAD"],
+    "allowedHeaders": ["*"],
+    "exposedHeaders": ["*"],
+    "maxAgeSeconds": 86400
+  }
+]

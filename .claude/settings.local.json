@@ -3,7 +3,14 @@
     "allow": [
       "Bash(curl:*)",
       "Bash(pkill:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(node comprehensive_test.js)",
+      "Bash(node:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(wrangler:*)",
+      "Bash(npm install:*)",
+      "Bash(npx wrangler init:*)",
+      "Bash(npx wrangler:*)"
     ],
     "deny": []
   }

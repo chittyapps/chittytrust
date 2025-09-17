@@ -1,0 +1,69 @@
+# Cloudflare Workers configuration for ChittyTrust
+name = "chittytrust-api"
+main = "src/worker.js"
+compatibility_date = "2024-01-01"
+
+# Environment variables
+[env.production.vars]
+ENVIRONMENT = "production"
+API_BASE_URL = "https://chittytrust.ai"
+
+[env.staging.vars]  
+ENVIRONMENT = "staging"
+API_BASE_URL = "https://staging.chittytrust.ai"
+
+# Bindings for Cloudflare services
+[[env.production.ai]]
+binding = "AI"
+
+[[env.staging.ai]]
+binding = "AI"
+
+# KV storage for caching trust scores
+[[env.production.kv_namespaces]]
+binding = "TRUST_CACHE"
+id = "chittytrust_cache_prod"
+
+[[env.staging.kv_namespaces]]
+binding = "TRUST_CACHE" 
+id = "chittytrust_cache_staging"
+
+# D1 database for trust history
+[[env.production.d1_databases]]
+binding = "TRUST_DB"
+database_name = "chittytrust-production"
+database_id = "placeholder-production-db-id"
+
+[[env.staging.d1_databases]]
+binding = "TRUST_DB"
+database_name = "chittytrust-staging"
+database_id = "placeholder-staging-db-id"
+
+# R2 bucket for evidence storage
+[[env.production.r2_buckets]]
+binding = "EVIDENCE_STORE"
+bucket_name = "chittytrust-evidence-prod"
+
+[[env.staging.r2_buckets]]
+binding = "EVIDENCE_STORE"
+bucket_name = "chittytrust-evidence-staging"
+
+# Custom domains
+[env.production]
+routes = [
+  { pattern = "api.chittytrust.ai/*", zone_name = "chittytrust.ai" }
+]
+
+[env.staging]
+routes = [
+  { pattern = "api-staging.chittytrust.ai/*", zone_name = "chittytrust.ai" }
+]
+
+# Build configuration
+[build]
+command = "npm run build"
+upload = { format = "modules", dir = "dist" }
+
+# Analytics and monitoring
+[observability]
+enabled = true
