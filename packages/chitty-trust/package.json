@@ -1,0 +1,16 @@
+{
+  "name": "@chittyos/trust",
+  "version": "1.0.0",
+  "description": "ChittyTrust - 6D Trust Engine for ChittyOS",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node test.js",
+    "build": "echo 'Build complete'"
+  },
+  "keywords": ["trust", "scoring", "chittytrust", "chittyos"],
+  "author": "ChittyOS",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}

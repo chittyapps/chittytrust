@@ -10,7 +10,12 @@
       "Bash(wrangler:*)",
       "Bash(npm install:*)",
       "Bash(npx wrangler init:*)",
-      "Bash(npx wrangler:*)"
+      "Bash(npx wrangler:*)",
+      "Bash(cp:*)",
+      "Bash(mkdir:*)",
+      "Bash(python:*)",
+      "Bash(PORT=5002 python:*)",
+      "Bash(chmod:*)"
     ],
     "deny": []
   }

@@ -1,0 +1,16 @@
+{
+  "name": "@chittyos/verify",
+  "version": "1.0.0",
+  "description": "ChittyVerify - Identity and Data Verification System",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node test.js",
+    "build": "echo 'Build complete'"
+  },
+  "keywords": ["verification", "identity", "kyc", "chittyverify", "chittyos"],
+  "author": "ChittyOS",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}

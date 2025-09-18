@@ -60,17 +60,24 @@ export default {
     }
 
     try {
-      // Initialize ChittyOS Core
+      // Initialize ChittyOS Core with complete ecosystem
       const chitty = new ChittyCloudflareCore({
         services: {
-          schema: { enabled: true, domain: 'schema.chitty.cc' },
           id: { enabled: true, domain: 'id.chitty.cc' },
+          schema: { enabled: true, domain: 'schema.chitty.cc' },
+          chain: { enabled: true, domain: 'chain.chitty.cc' },
+          ledger: { enabled: true, domain: 'ledger.chitty.cc' },
           trust: { enabled: true, domain: 'trust.chitty.cc' },
-          evidence: { enabled: true, domain: 'evidence.chitty.cc' },
-          marketplace: { enabled: true, domain: 'marketplace.chitty.cc' }
+          verify: { enabled: true, domain: 'verify.chitty.cc' }
         },
         ai: { enabled: true, vectorize: { enabled: true } },
-        worldOrder: { phase: 1, target: 'global_trust_revolution' }
+        worldOrder: { phase: 1, target: 'global_trust_revolution' },
+        integration: {
+          namespace: 'evidence-ledger',
+          region: '1',
+          jurisdiction: 'USA',
+          trustLevel: '3'
+        }
       });
       
       await chitty.initialize();
