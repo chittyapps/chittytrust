@@ -200,7 +200,7 @@ export class CookCountyAPIService {
     
     return {
       success: true,
-      filingId: crypto.randomUUID(),
+      filingId: `pending-id-${Date.now()}`,
       confirmationNumber,
       message: `Filing submitted successfully. Confirmation: ${confirmationNumber}`
     };

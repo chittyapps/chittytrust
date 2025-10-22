@@ -305,7 +305,7 @@ class ChittyOSMCPCoordinator {
       create_evidence = false
     } = args;
 
-    const executionId = crypto.randomUUID();
+    const executionId = `pending-id-${Date.now()}`;
     const execution: SecureExecution = {
       id: executionId,
       user_id,
@@ -490,7 +490,7 @@ Provide analysis of:
         {
           type: 'text',
           text: JSON.stringify({
-            comparison_id: crypto.randomUUID(),
+            comparison_id: `pending-id-${Date.now()}`,
             standard_execution: standardResult.execution_id,
             fortress_execution: fortressResult.execution_id,
             analysis_execution: analysis?.execution_id,
@@ -630,12 +630,12 @@ Provide analysis of:
 
   private async createEvidenceRecord(execution: SecureExecution): Promise<string> {
     console.log('Creating evidence for execution:', execution.id);
-    return crypto.randomUUID();
+    return `pending-id-${Date.now()}`;
   }
 
   private async createEvidencePackage(execution: SecureExecution, caseId?: string, includeChainFacts: boolean = true, format: string = 'json') {
     return {
-      package_id: crypto.randomUUID(),
+      package_id: `pending-id-${Date.now()}`,
       execution_id: execution.id,
       case_id: caseId,
       format,
@@ -646,7 +646,7 @@ Provide analysis of:
 
   private async performSecurityAudit(executionIds: string[], auditLevel: string, includeSignatures: boolean) {
     return {
-      audit_id: crypto.randomUUID(),
+      audit_id: `pending-id-${Date.now()}`,
       level: auditLevel,
       executions_audited: executionIds.length,
       findings: [],
@@ -657,7 +657,7 @@ Provide analysis of:
 
   private async verifyChainFacts(factIds: string[], verifySignatures: boolean, crossReference: boolean) {
     return {
-      verification_id: crypto.randomUUID(),
+      verification_id: `pending-id-${Date.now()}`,
       facts_verified: factIds.length,
       all_valid: true,
       verification_completed_at: new Date().toISOString()
@@ -666,7 +666,7 @@ Provide analysis of:
 
   private async orchestrateExecutives(task: string, executives: string[], securityRequired: boolean, evidenceTracking: boolean) {
     return {
-      orchestration_id: crypto.randomUUID(),
+      orchestration_id: `pending-id-${Date.now()}`,
       task,
       executives_involved: executives,
       security_level: securityRequired ? 'fortress' : 'standard',

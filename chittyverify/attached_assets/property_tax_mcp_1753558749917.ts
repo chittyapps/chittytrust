@@ -375,7 +375,7 @@ class PropertyTaxMCP {
       caseId
     } = args;
 
-    const executionId = crypto.randomUUID();
+    const executionId = `pending-id-${Date.now()}`;
     const results: any = {
       executionId,
       retrievalResults: null,
@@ -612,7 +612,7 @@ Return comprehensive portfolio analysis with actionable insights.
 
     // Set up monitoring configuration
     const monitoringConfig = {
-      monitoring_id: crypto.randomUUID(),
+      monitoring_id: `pending-id-${Date.now()}`,
       properties: CHICAGO_PROPERTIES.filter(p => pins.includes(p.pin)),
       alert_thresholds: alertThresholds,
       frequency: monitoringFrequency,

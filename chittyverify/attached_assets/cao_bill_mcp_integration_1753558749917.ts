@@ -345,7 +345,7 @@ class CAOBillMCP {
       caseId
     } = args;
 
-    const executionId = crypto.randomUUID();
+    const executionId = `pending-id-${Date.now()}`;
     const results: any = {
       executionId,
       retrievalResults: {},
