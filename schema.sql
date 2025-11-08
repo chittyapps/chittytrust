@@ -1,25 +1,36 @@
--- ChittyTrust D1 Database Schema
--- Court-admissible trust scoring and evidence tracking
+-- ChittyScore 6D Trust Scoring Database Schema
+-- PostgreSQL schema for Neon database (chittyos-core)
 
--- Trust scores history table
+-- Trust scores history table - 6D behavioral trust model
 CREATE TABLE IF NOT EXISTS trust_scores (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    persona_id TEXT NOT NULL,
-    composite_score REAL NOT NULL,
-    people_score REAL NOT NULL,
-    legal_score REAL NOT NULL,
-    state_score REAL NOT NULL,
-    chitty_score REAL NOT NULL,
-    source_dimension REAL NOT NULL,
-    temporal_dimension REAL NOT NULL,
-    channel_dimension REAL NOT NULL,
-    outcome_dimension REAL NOT NULL,
-    network_dimension REAL NOT NULL,
-    justice_dimension REAL NOT NULL,
-    confidence REAL NOT NULL,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    identity_id UUID NOT NULL, -- Foreign key to identities.id (internal UUID, NOT ChittyID DID)
+
+    -- 6 Dimension Scores (0-100 scale)
+    source_dimension NUMERIC(5,2) DEFAULT 0 CHECK (source_dimension >= 0 AND source_dimension <= 100),
+    temporal_dimension NUMERIC(5,2) DEFAULT 0 CHECK (temporal_dimension >= 0 AND temporal_dimension <= 100),
+    channel_dimension NUMERIC(5,2) DEFAULT 0 CHECK (channel_dimension >= 0 AND channel_dimension <= 100),
+    outcome_dimension NUMERIC(5,2) DEFAULT 0 CHECK (outcome_dimension >= 0 AND outcome_dimension <= 100),
+    network_dimension NUMERIC(5,2) DEFAULT 0 CHECK (network_dimension >= 0 AND network_dimension <= 100),
+    justice_dimension NUMERIC(5,2) DEFAULT 0 CHECK (justice_dimension >= 0 AND justice_dimension <= 100),
+
+    -- 4 Output Scores (0-100 scale)
+    people_score NUMERIC(5,2) DEFAULT 0 CHECK (people_score >= 0 AND people_score <= 100),
+    legal_score NUMERIC(5,2) DEFAULT 0 CHECK (legal_score >= 0 AND legal_score <= 100),
+    state_score NUMERIC(5,2) DEFAULT 0 CHECK (state_score >= 0 AND state_score <= 100),
+    chitty_score NUMERIC(5,2) DEFAULT 0 CHECK (chitty_score >= 0 AND chitty_score <= 100),
+
+    -- Composite & Metadata
+    composite_score NUMERIC(5,2) DEFAULT 0 CHECK (composite_score >= 0 AND composite_score <= 100),
+    trust_level VARCHAR(20) DEFAULT 'L0_ANONYMOUS',
+    confidence NUMERIC(5,2) DEFAULT 0 CHECK (confidence >= 0 AND confidence <= 100),
     ai_enhanced BOOLEAN DEFAULT TRUE,
-    calculated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    metadata TEXT -- JSON metadata
+    insights JSONB DEFAULT '[]'::jsonb,
+    calculation_details JSONB DEFAULT '{}'::jsonb,
+
+    calculated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Evidence records table
@@ -57,19 +68,19 @@ CREATE TABLE IF NOT EXISTS verification_requests (
     metadata TEXT -- JSON metadata
 );
 
--- Trust timeline events
+-- Trust events table - Event history that affects trust scores
 CREATE TABLE IF NOT EXISTS trust_events (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    persona_id TEXT NOT NULL,
-    event_type TEXT NOT NULL,
-    event_description TEXT,
-    impact_score REAL DEFAULT 0,
-    evidence_id TEXT,
-    verification_id INTEGER,
-    ai_detected BOOLEAN DEFAULT FALSE,
-    occurred_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    recorded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    metadata TEXT -- JSON metadata
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    identity_id UUID NOT NULL, -- Foreign key to identities.id (internal UUID, NOT ChittyID DID)
+    event_type VARCHAR(50) NOT NULL, -- 'transaction', 'verification', 'endorsement', 'dispute', etc.
+    event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
+    channel VARCHAR(50), -- 'verified_api', 'blockchain', 'email', etc.
+    outcome VARCHAR(20) NOT NULL DEFAULT 'pending', -- 'positive', 'negative', 'neutral', 'pending'
+    impact_score NUMERIC(4,2) DEFAULT 1.0 CHECK (impact_score >= 0 AND impact_score <= 10),
+    related_identities UUID[] DEFAULT '{}',
+    tags TEXT[] DEFAULT '{}',
+    metadata JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- AI insights and recommendations
@@ -104,13 +115,25 @@ CREATE TABLE IF NOT EXISTS api_usage (
 );
 
 -- Create indexes for performance
-CREATE INDEX IF NOT EXISTS idx_trust_scores_persona_id ON trust_scores(persona_id);
-CREATE INDEX IF NOT EXISTS idx_trust_scores_calculated_at ON trust_scores(calculated_at);
+-- Trust Scores indexes
+CREATE INDEX IF NOT EXISTS idx_trust_scores_identity ON trust_scores(identity_id);
+CREATE INDEX IF NOT EXISTS idx_trust_scores_composite ON trust_scores(composite_score DESC);
+CREATE INDEX IF NOT EXISTS idx_trust_scores_trust_level ON trust_scores(trust_level);
+CREATE INDEX IF NOT EXISTS idx_trust_scores_chitty_score ON trust_scores(chitty_score DESC);
+CREATE INDEX IF NOT EXISTS idx_trust_scores_identity_calculated ON trust_scores(identity_id, calculated_at DESC);
+
+-- Trust Events indexes
+CREATE INDEX IF NOT EXISTS idx_trust_events_identity ON trust_events(identity_id);
+CREATE INDEX IF NOT EXISTS idx_trust_events_type ON trust_events(event_type);
+CREATE INDEX IF NOT EXISTS idx_trust_events_timestamp ON trust_events(event_timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_trust_events_outcome ON trust_events(outcome);
+
+-- Evidence Records indexes (legacy - if using D1)
 CREATE INDEX IF NOT EXISTS idx_evidence_records_persona_id ON evidence_records(persona_id);
 CREATE INDEX IF NOT EXISTS idx_evidence_records_uploaded_at ON evidence_records(uploaded_at);
+
+-- Other indexes
 CREATE INDEX IF NOT EXISTS idx_verification_requests_status ON verification_requests(status);
-CREATE INDEX IF NOT EXISTS idx_trust_events_persona_id ON trust_events(persona_id);
-CREATE INDEX IF NOT EXISTS idx_trust_events_occurred_at ON trust_events(occurred_at);
 CREATE INDEX IF NOT EXISTS idx_ai_insights_persona_id ON ai_insights(persona_id);
 CREATE INDEX IF NOT EXISTS idx_api_usage_timestamp ON api_usage(timestamp);
 
