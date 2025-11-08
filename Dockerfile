@@ -1,4 +1,4 @@
-# Dockerfile for ChittyOS Trust API deployment
+# Dockerfile for ChittyOS Score API deployment
 
 FROM python:3.11-slim
 

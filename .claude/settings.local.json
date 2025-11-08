@@ -15,7 +15,13 @@
       "Bash(mkdir:*)",
       "Bash(python:*)",
       "Bash(PORT=5002 python:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(python3 -c \"import sys; sys.path.insert(0, ''''/Users/nb/Projects/development/chittytrust''''); from main import app; print(''''Flask app found'''')\")",
+      "Bash(python3:*)",
+      "Read(//Users/nb/Projects/development/**)",
+      "Bash(git init:*)",
+      "Bash(git commit:*)",
+      "Bash(find:*)"
     ],
     "deny": []
   }

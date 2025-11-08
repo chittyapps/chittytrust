@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChittyTrust - 6D Trust Scoring System</title>
+    <title>ChittyScore - 6D Trust Scoring System</title>
     
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -48,7 +48,7 @@
                         </svg>
                     </div>
                 </div>
-                <span class="chitty-brand-text">ChittyTrust</span>
+                <span class="chitty-brand-text">ChittyScore</span>
             </a>
             <div class="navbar-nav ms-auto">
                 <span class="nav-link text-chitty-blue">6D Trust Revolution</span>
@@ -66,7 +66,7 @@
                         <span class="text-chitty-green">Revolution</span>
                     </h1>
                     <p class="lead text-light mb-4">
-                        Beyond credit scores. Beyond binary trust. ChittyTrust measures what matters: 
+                        Beyond credit scores. Beyond binary trust. ChittyScore measures what matters: 
                         <strong>Source, Time, Channel, Outcomes, Network, and Justice</strong>.
                     </p>
                     <div class="d-flex gap-3 mb-4">
@@ -85,7 +85,7 @@
                     </div>
                     <button class="btn btn-chitty-primary btn-lg" onclick="scrollToDemo()">
                         <i data-feather="activity" class="me-2"></i>
-                        Experience ChittyTrust
+                        Experience ChittyScore
                     </button>
                 </div>
                 <div class="col-lg-6">
@@ -692,7 +692,7 @@
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <div class="text-muted">
-                        © 2025 ChittyTrust. Making trust measurable.
+                        © 2025 ChittyScore. Making trust measurable.
                     </div>
                 </div>
                 <div class="col-md-6 text-md-end">
@@ -719,41 +719,41 @@
 
         // Enhanced Interactive Functions
         function refreshTrustScore() {
-            if (window.chittyTrustEnhanced && window.chittyTrustEnhanced.currentPersona) {
-                window.chittyTrustEnhanced.loadPersonaWithTransition(window.chittyTrustEnhanced.currentPersona);
+            if (window.chittyScoreEnhanced && window.chittyScoreEnhanced.currentPersona) {
+                window.chittyScoreEnhanced.loadPersonaWithTransition(window.chittyScoreEnhanced.currentPersona);
             }
         }
-        
+
         function exportTrustReport() {
-            if (window.chittyTrustEnhanced && window.chittyTrustEnhanced.trustData) {
-                const data = window.chittyTrustEnhanced.trustData;
-                const report = `ChittyTrust Report\n\nComposite Score: ${Math.round(data.composite * 100)}%\nChitty Score™: ${Math.round(data.scores.chitty * 100)}%\n\nGenerated: ${new Date().toLocaleString()}`;
-                
+            if (window.chittyScoreEnhanced && window.chittyScoreEnhanced.trustData) {
+                const data = window.chittyScoreEnhanced.trustData;
+                const report = `ChittyScore Report\n\nComposite Score: ${Math.round(data.composite * 100)}%\nChitty Score™: ${Math.round(data.scores.chitty * 100)}%\n\nGenerated: ${new Date().toLocaleString()}`;
+
                 const blob = new Blob([report], { type: 'text/plain' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'chitty-trust-report.txt';
+                a.download = 'chitty-score-report.txt';
                 a.click();
-                
-                window.chittyTrustEnhanced.triggerSuccess('Trust report exported!');
+
+                window.chittyScoreEnhanced.triggerSuccess('Trust report exported!');
             }
         }
-        
+
         function viewBlockchainRecord() {
-            window.chittyTrustEnhanced.triggerSuccess('Blockchain record verified! Transaction ID: ctx_' + Math.random().toString(36).substr(2, 9));
+            window.chittyScoreEnhanced.triggerSuccess('Blockchain record verified! Transaction ID: ctx_' + Math.random().toString(36).substr(2, 9));
         }
-        
+
         function shareVerification() {
             if (navigator.share) {
                 navigator.share({
-                    title: 'ChittyTrust Verification',
-                    text: 'Check out my trust verification on ChittyTrust',
+                    title: 'ChittyScore Verification',
+                    text: 'Check out my trust verification on ChittyScore',
                     url: window.location.href
                 });
             } else {
                 navigator.clipboard.writeText(window.location.href);
-                window.chittyTrustEnhanced.triggerSuccess('Verification link copied to clipboard!');
+                window.chittyScoreEnhanced.triggerSuccess('Verification link copied to clipboard!');
             }
         }
 
